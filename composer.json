@@ -1,0 +1,9 @@
+{
+  "name": "gggeek/polyfill-gettext",
+  "description": "A replacement for the php gettext extension. Based on php-gettext by Danilo Segan.",
+  "license": "GPL-2.0-or-later",
+  "keywords": [ "gettext" ],
+  "require": {
+    "smmoosavi/php-gettext-core": "=6.7.5"
+  }
+}
