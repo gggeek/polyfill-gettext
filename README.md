@@ -59,7 +59,7 @@ disgusting language of PHP, because I'm often constrained to it.
 
 ## Bugs
 
-Report them on https://bugs.launchpad.net/php-gettext
+Report them at https://github.com/gggeek/polyfill-gettext/issues
 
 ## Usage
 
