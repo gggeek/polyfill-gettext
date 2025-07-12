@@ -32,7 +32,7 @@
     "yoast/phpunit-polyfills": "*"
   },
   "suggest": {
-    "ext-mbstring": ""
+    "ext-mbstring": "Necessary when using specific character encodings (charsets) for translated messages"
   },
   "provide": {
     "ext-gettext": "*"

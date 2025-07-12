@@ -1,11 +1,19 @@
-# WIP...
+# Polyfill-Gettext
+
+A pure-php implementation of the API provided by the PHP gettext extension.
+
+Evolved from the php-gettext codebase available at https://launchpad.net/php-gettext.
+
+# *** WIP ***
+
+
+## Original Readme follows
 
 Copyright 2003, 2006, 2009 -- Danilo "angry with PHP[1]" Segan
 Licensed under GPLv2 (or any later version, see COPYING)
 
 [1] PHP is actually cyrillic, and translates roughly to
 "works-doesn't-work" (UTF-8: Ради-Не-Ради)
-
 
 ## Introduction
 
@@ -56,7 +64,6 @@ disgusting language of PHP, because I'm often constrained to it.
   when you read in data from a database, or you can create your own
   derivative of StreamReader for anything you like.
 
-
 ## Bugs
 
 Report them at https://github.com/gggeek/polyfill-gettext/issues
@@ -67,7 +74,7 @@ Put files streams.php and gettext.php somewhere you can load them
 from, and require 'em in where you want to use them.
 
 Then, create one 'stream reader' (a class that provides functions
-like read(), seekto(), currentpos() and length()) which will
+like `read()`, `seekto()`, `currentpos()` and `length()`) which will
 provide data for the 'gettext_reader', with eg.
 
     $streamer = new FileStream('data.mo');
@@ -78,7 +85,7 @@ Then, use that as a parameter to gettext_reader constructor:
 
 If you want to disable pre-loading of entire message catalog in
 memory (if, for example, you have a multi-thousand message catalog
-which you'll use only occasionally), use "false" for second
+which you'll use only occasionally), use `false` for second
 parameter to gettext_reader constructor:
 
     $wohoo = new gettext_reader($streamer, false);
@@ -89,9 +96,11 @@ disposal, so may run:
     print $wohoo->translate("This is a test");
     print $wohoo->ngettext("%d bird", "%d birds", $birds);
 
-You might need to pass parameter "-k" to xgettext to make it
+You might need to pass parameter `-k` to xgettext to make it
 extract all the strings. In above example, try with
-xgettext -ktranslate -kngettext:1,2 file.php
+
+    xgettext -ktranslate -kngettext:1,2 file.php
+
 what should create messages.po which contains two messages for
 translation.
 
@@ -99,14 +108,13 @@ I suggest creating simple aliases for these functions (see
 example/pigs.php for how do I do it, which means it's probably a
 bad way).
 
-
 Usage with gettext.inc (standard gettext interfaces emulation)
 
 Check example in examples/pig_dropin.php, basically you include
 gettext.inc and use all the standard gettext interfaces as
 documented on:
 
-       http://www.php.net/gettext
+       https://www.php.net/gettext
 
 The only catch is that you can check return value of setlocale()
 to see if your locale is system supported or not.
@@ -117,7 +125,9 @@ to see if your locale is system supported or not.
 See in examples/ subdirectory. There are a couple of files.
 pigs.php is an example, serbian.po is a translation to Serbian
 language, and serbian.mo is generated with
-   msgfmt -o serbian.mo serbian.po
+
+    msgfmt -o serbian.mo serbian.po
+
 There is also simple "update" script that can be used to generate
 POT file and to update the translation using msgmerge.
 
