@@ -554,9 +554,12 @@ class T
   protected static function _get_codeset($domain=null) {
     //global $text_domains, $default_domain, $LC_CATEGORIES;
     if (!isset($domain)) $domain = static::$default_domain;
-    /// @todo call a function to get the current mb internal encoding, instead of checking ini values
-    /// @todo if mbstring is not enabled, look at other php.ini settings: ...
-    return (isset(static::$text_domains[$domain]->codeset))? static::$text_domains[$domain]->codeset : ini_get('mbstring.internal_encoding');
+    return (isset(static::$text_domains[$domain]->codeset))? static::$text_domains[$domain]->codeset : (
+      (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
+        /// @todo should we default to this? Esp. for php 5.x?
+        ini_get('internal_encoding') != '' ? ini_get('mbstring.internal_encoding') : ('UTF-8')
+      )
+    );
   }
 
   /**
