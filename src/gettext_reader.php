@@ -35,37 +35,73 @@ namespace PGetText;
  * that you don't want to keep in memory)
  */
 class gettext_reader {
-  //public:
-  var $error = 0; // public variable that holds error code (0 if no error)
+  public $error = 0; // public variable that holds error code (0 if no error)
 
-  //private:
-  var $BYTEORDER = 0;        // 0: low endian, 1: big endian
-  var $STREAM = NULL;
-  var $short_circuit = false;
-  var $enable_cache = false;
-  var $originals = NULL;      // offset of original table
-  var $translations = NULL;    // offset of translation table
-  var $pluralheader = NULL;    // cache header field for plural forms
-  var $total = 0;          // total string count
-  var $table_originals = NULL;  // table for original strings (offsets)
-  var $table_translations = NULL;  // table for translated strings (offsets)
-  var $cache_translations = NULL;  // original -> translation mapping
+  protected $BYTEORDER = 0; // 0: low endian, 1: big endian
+  protected $STREAM = null;
+  protected $short_circuit = false;
+  protected $enable_cache = false;
+  protected $originals = null; // offset of original table
+  protected $translations = null; // offset of translation table
+  protected $pluralheader = null; // cache header field for plural forms
+  protected $total = 0; // total string count
+  protected $table_originals = null;  // table for original strings (offsets)
+  protected $table_translations = null;  // table for translated strings (offsets)
+  protected $cache_translations = null;  // original -> translation mapping
 
   /* Methods */
+
+  /**
+   * Constructor
+   *
+   * @param null|object $Reader the StreamReader object
+   * @param boolean $enable_cache Enable or disable caching of strings (default on)
+   */
+  function __construct($Reader, $enable_cache = true) {
+    // If there isn't a StreamReader, turn on short circuit mode.
+    if (! $Reader || isset($Reader->error) ) {
+      $this->short_circuit = true;
+      return;
+    }
+
+    // Caching can be turned off
+    $this->enable_cache = $enable_cache;
+
+    $MAGIC1 = "\x95\x04\x12\xde";
+    $MAGIC2 = "\xde\x12\x04\x95";
+
+    $this->STREAM = $Reader;
+    $magic = $this->read(4);
+    if ($magic == $MAGIC1) {
+      $this->BYTEORDER = 1;
+    } elseif ($magic == $MAGIC2) {
+      $this->BYTEORDER = 0;
+    } else {
+      $this->error = 1; // not MO file
+      //return false;
+    }
+
+    /// @todo FIXME: Do we care about revision? We should.
+    $revision = $this->readint();
+
+    $this->total = $this->readint();
+    $this->originals = $this->readint();
+    $this->translations = $this->readint();
+  }
 
   /**
    * Reads a 32bit Integer from the Stream
    *
    * @return integer from the Stream
    */
-  private function readint() {
+  protected function readint() {
     if ($this->BYTEORDER == 0) {
       // low endian
-      $input=unpack('V', $this->STREAM->read(4));
+      $input = unpack('V', $this->STREAM->read(4));
       return array_shift($input);
     } else {
       // big endian
-      $input=unpack('N', $this->STREAM->read(4));
+      $input = unpack('N', $this->STREAM->read(4));
       return array_shift($input);
     }
   }
@@ -91,49 +127,11 @@ class gettext_reader {
   }
 
   /**
-   * Constructor
-   *
-   * @param object $Reader the StreamReader object
-   * @param boolean $enable_cache Enable or disable caching of strings (default on)
-   */
-  function __construct($Reader, $enable_cache = true) {
-    // If there isn't a StreamReader, turn on short circuit mode.
-    if (! $Reader || isset($Reader->error) ) {
-      $this->short_circuit = true;
-      return;
-    }
-
-    // Caching can be turned off
-    $this->enable_cache = $enable_cache;
-
-    $MAGIC1 = "\x95\x04\x12\xde";
-    $MAGIC2 = "\xde\x12\x04\x95";
-
-    $this->STREAM = $Reader;
-    $magic = $this->read(4);
-    if ($magic == $MAGIC1) {
-      $this->BYTEORDER = 1;
-    } elseif ($magic == $MAGIC2) {
-      $this->BYTEORDER = 0;
-    } else {
-      $this->error = 1; // not MO file
-      return false;
-    }
-
-    // FIXME: Do we care about revision? We should.
-    $revision = $this->readint();
-
-    $this->total = $this->readint();
-    $this->originals = $this->readint();
-    $this->translations = $this->readint();
-  }
-
-  /**
    * Loads the translation tables from the MO file into the cache
    * If caching is enabled, also loads all strings into a cache
    * to speed up translation lookups
    */
-  private function load_tables() {
+  protected function load_tables() {
     if (is_array($this->cache_translations) &&
       is_array($this->table_originals) &&
       is_array($this->table_translations))
@@ -168,7 +166,7 @@ class gettext_reader {
    * @param int $num Offset number of original string
    * @return string Requested string if found, otherwise ''
    */
-  private function get_original_string($num) {
+  protected function get_original_string($num) {
     $length = $this->table_originals[$num * 2 + 1];
     $offset = $this->table_originals[$num * 2 + 2];
     if (! $length)
@@ -184,7 +182,7 @@ class gettext_reader {
    * @param int $num Offset number of original string
    * @return string Requested string if found, otherwise ''
    */
-  private function get_translation_string($num) {
+  protected function get_translation_string($num) {
     $length = $this->table_translations[$num * 2 + 1];
     $offset = $this->table_translations[$num * 2 + 2];
     if (! $length)
@@ -202,7 +200,7 @@ class gettext_reader {
    * @param int $end (internally used in recursive function)
    * @return int string number (offset in originals table)
    */
-  private function find_string($string, $start = -1, $end = -1) {
+  protected function find_string($string, $start = -1, $end = -1) {
     if (($start == -1) or ($end == -1)) {
       // find_string is called with only one parameter, set start end end
       $start = 0;
@@ -266,7 +264,7 @@ class gettext_reader {
    *
    * @return string $expr sanitized plural form expression
    */
-  private function sanitize_plural_expression($expr) {
+  protected function sanitize_plural_expression($expr) {
     // Get rid of disallowed characters.
     $expr = preg_replace('@[^a-zA-Z0-9_:;\(\)\?\|\&=!<>+*/\%-]@', '', $expr);
 
@@ -313,7 +311,7 @@ class gettext_reader {
    *
    * @return string plural form header
    */
-  private function get_plural_forms() {
+  protected function get_plural_forms() {
     // let's assume message number 0 is header
     // this is true, right?
     $this->load_tables();
@@ -393,7 +391,7 @@ class gettext_reader {
     }
   }
 
-  function pgettext($context, $msgid) {
+  public function pgettext($context, $msgid) {
     $key = $context . chr(4) . $msgid;
     $ret = $this->translate($key);
     if (strpos($ret, "\004") !== FALSE) {
@@ -403,7 +401,7 @@ class gettext_reader {
     }
   }
 
-  function npgettext($context, $singular, $plural, $number) {
+  public function npgettext($context, $singular, $plural, $number) {
     $key = $context . chr(4) . $singular;
     $ret = $this->ngettext($key, $plural, $number);
     if (strpos($ret, "\004") !== FALSE) {
