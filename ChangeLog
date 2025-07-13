@@ -1,7 +1,8 @@
-2025-07     Gaetano Giunta
+The most important changes in each release are now recorded in NEWS.md.
 
-  * move to GitHub, port to Psr autoloading, add Composer package definition, move class members to private,
-    remove global variables and functions in favour of new class `PGetText\T`
+Detailed changes starting at 2025-06-23 are listed at https://github.com/gggeek/polyfill-gettext/commits/main/
+
+Detailed changes starting at 2010-12-24 are listed at https://code.launchpad.net/~danilo/php-gettext/trunk
 
 2006-02-07  Danilo Šegan  <danilo@gnome.org>
 
