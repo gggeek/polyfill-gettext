@@ -9,7 +9,7 @@ class LocaleTest extends PGetText_PolyfillTestCase
   public function test_setlocale()
   {
     putenv("LC_ALL=");
-    // _setlocale defaults to a locale name from environment variable LANG.
+    // T::setlocale defaults to a locale name from environment variable LANG.
     putenv("LANG=sr_RS");
     $this->assertEquals('sr_RS', T::setlocale(LC_MESSAGES, 0));
   }
@@ -60,7 +60,6 @@ class LocaleTest extends PGetText_PolyfillTestCase
     // We can pass in only language and modifier.
     $this->assertEquals(array("sr@latin", "sr"),
       T::get_list_of_locales("sr@latin"));
-
 
     // If locale name is not following the regular POSIX pattern,
     // it's used verbatim.
