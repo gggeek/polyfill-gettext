@@ -77,9 +77,7 @@ else {
 print "<pre>";
 print T::_("This is how the story goes.\n\n");
 for ($number=6; $number>=0; $number--) {
-  print sprintf( T::_ngettext("%d pig went to the market\n",
-			  "%d pigs went to the market\n", $number),
-		 $number );
+  print sprintf(T::_ngettext("%d pig went to the market\n", "%d pigs went to the market\n", $number), $number);
 }
 print "</pre>\n";
 ?>

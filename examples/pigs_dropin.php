@@ -38,7 +38,7 @@ $encoding = 'UTF-8';
 $locale = (isset($_GET['lang']))? $_GET['lang'] : DEFAULT_LOCALE;
 
 // gettext setup
-setlocale(LC_MESSAGES, $locale);
+T::setlocale(LC_MESSAGES, $locale);
 // Set the text domain as 'messages'
 $domain = 'messages';
 bindtextdomain($domain, LOCALE_DIR);
@@ -75,9 +75,7 @@ else {
 print "<pre>";
 print _("This is how the story goes.\n\n");
 for ($number=6; $number>=0; $number--) {
-  print sprintf(T::ngettext("%d pig went to the market\n",
-			  "%d pigs went to the market\n", $number),
-		 $number );
+  printf(T::ngettext("%d pig went to the market\n", "%d pigs went to the market\n", $number), $number);
 }
 print "</pre>\n";
 ?>
