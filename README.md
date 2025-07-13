@@ -1,6 +1,6 @@
 # Polyfill-Gettext
 
-A pure-php implementation of the API provided by the PHP gettext extension.
+A pure-php implementation of the API provided by the [PHP gettext extension](https://www.php.net/manual/en/book.gettext.php).
 
 Evolved from the php-gettext codebase available at https://launchpad.net/php-gettext.
 
