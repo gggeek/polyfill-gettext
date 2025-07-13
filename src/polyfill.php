@@ -25,20 +25,9 @@
 
 use PGetText\T;
 
-// *** Constants ***
-
-/*
-LC_CTYPE        0
-LC_NUMERIC      1
-LC_TIME         2
-LC_COLLATE      3
-LC_MONETARY     4
-LC_MESSAGES     5
-LC_ALL          6
-*/
 
 // LC_MESSAGES is not available if php-gettext is not loaded
-// while the other constants are already available from session extension.
+// while the other constants are already available from the session extension.
 if (!defined('LC_MESSAGES')) {
   define('LC_MESSAGES',	5);
 }
@@ -142,6 +131,7 @@ if (!function_exists('gettext')) {
   }
 }
 
+/// @todo is it possible that `setlocale` is not available?
 if (!function_exists('setlocale')) {
   /**
    * @param int $category
