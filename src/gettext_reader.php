@@ -370,9 +370,8 @@ class gettext_reader {
     // find out the appropriate form
     $select = $this->select_string($number);
 
-    // this should contains all strings separated by NULLs
+    // this should contain all strings separated by NULLs
     $key = $single . chr(0) . $plural;
-
 
     if ($this->enable_cache) {
       if (! array_key_exists($key, $this->cache_translations)) {
@@ -412,6 +411,5 @@ class gettext_reader {
     } else {
       return $ret;
     }
-
   }
 }
