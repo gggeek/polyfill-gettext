@@ -6,8 +6,14 @@ Evolved from the php-gettext codebase available at https://launchpad.net/php-get
 
 # *** WIP ***
 
+[![License](https://poser.pugx.org/gggeek/polyfill-gettext/license)](https://packagist.org/packages/gggeek/polyfill-gettext)
+[![Latest Stable Version](https://poser.pugx.org/gggeek/polyfill-gettext/v/stable)](https://packagist.org/packages/gggeek/polyfill-gettext)
+[![Total Downloads](https://poser.pugx.org/gggeek/polyfill-gettext/downloads)](https://packagist.org/packages/gggeek/polyfill-gettext)
 
-## Original Readme follows
+[![Build Status](https://github.com/gggeek/polyfill-gettext/actions/workflows/ci.yaml/badge.svg)](https://github.com/gggeek/polyfill-gettext/actions/workflows/ci.yaml)
+[![Code Coverage](https://codecov.io/gh/gggeek/polyfill-gettext/branch/master/graph/badge.svg)](https://app.codecov.io/gh/gggeek/phpxmlrpc)
+
+# Original Readme follows
 
 Copyright 2003, 2006, 2009 -- Danilo "angry with PHP[1]" Segan
 Licensed under GPLv2 (or any later version, see COPYING)
