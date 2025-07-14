@@ -23,20 +23,20 @@ Licensed under GPLv2 (or any later version, see COPYING)
 
 ## Introduction
 
-  How many times did you look for a good translation tool, and
-  found out that gettext is best for the job? Many times.
+How many times did you look for a good translation tool, and
+found out that gettext is best for the job? Many times.
 
-  How many times did you try to use gettext in PHP, but failed
-  miserably, because either your hosting provider didn't support
-  it, or the server didn't have adequate locale? Many times.
+How many times did you try to use gettext in PHP, but failed
+miserably, because either your hosting provider didn't support
+it, or the server didn't have adequate locale? Many times.
 
-  Well, this is a solution to your needs. It allows using gettext
-  tools for managing translations, yet it doesn't require gettext
-  library at all. It parses generated MO files directly, and thus
-  might be a bit slower than the (maybe provided) gettext library.
+Well, this is a solution to your needs. It allows using gettext
+tools for managing translations, yet it doesn't require gettext
+library at all. It parses generated MO files directly, and thus
+might be a bit slower than the (maybe provided) gettext library.
 
-  PHP-gettext is a simple reader for GNU gettext MO files. Those
-  are binary containers for translations, produced by GNU msgfmt.
+Polyfill-Gettext is a simple reader for GNU gettext MO files. Those
+are binary containers for translations, produced by GNU msgfmt.
 
 ## Why?
 
@@ -52,21 +52,21 @@ disgusting language of PHP, because I'm often constrained to it.
 
 * Support for simple translations
   Just define a simple alias for translate() function (suggested
-  use of _() or gettext(); see provided example).
+  use of `_()` or `gettext()`; see provided example).
 
-* Support for ngettext calls (plural forms, see a note under bugs)
+* Support for `ngettext` calls (plural forms, see a note under bugs)
   You may also use plural forms. Translations in MO files need to
   provide this, and they must also provide "plural-forms" header.
-  Please see 'info gettext' for more details.
+  Please see `info gettext` for more details.
 
 * Support for reading straight files, or strings (!!!)
   Since I can imagine many different backends for reading in the MO
-  file data, I used imaginary abstract class StreamReader to do all
+  file data, I used imaginary abstract class `StreamReader` to do all
   the input (check streams.php). For your convenience, I've already
-  provided two classes for reading files: FileReader and
-  StringReader (CachedFileReader is a combination of the two: it
+  provided two classes for reading files: `FileReader` and
+  `StringReader` (`CachedFileReader` is a combination of the two: it
   loads entire file contents into a string, and then works on that).
-  See example below for usage. You can for instance use StringReader
+  See example below for usage. You can for instance use `StringReader`
   when you read in data from a database, or you can create your own
   derivative of StreamReader for anything you like.
 
@@ -76,25 +76,26 @@ Report them at https://github.com/gggeek/polyfill-gettext/issues
 
 ## Usage
 
-Put files streams.php and gettext.php somewhere you can load them
-from, and require 'em in where you want to use them.
+Install the library using Composer, then be sure to require the Composer autoloader in your code.
 
-Then, create one 'stream reader' (a class that provides functions
-like `read()`, `seekto()`, `currentpos()` and `length()`) which will
-provide data for the 'gettext_reader', with eg.
+### Custom library usage
+
+Create one 'stream reader' (a class that provides functions
+`read()` and `seekto()`) which will
+provide data for the `gettext_reader`, with eg.
 
     $streamer = new FileStream('data.mo');
 
 Then, use that as a parameter to gettext_reader constructor:
 
-    $wohoo = new gettext_reader($streamer);
+    $wohoo = new PGetText\gettext_reader($streamer);
 
 If you want to disable pre-loading of entire message catalog in
 memory (if, for example, you have a multi-thousand message catalog
 which you'll use only occasionally), use `false` for second
 parameter to gettext_reader constructor:
 
-    $wohoo = new gettext_reader($streamer, false);
+    $wohoo = new PGetText\gettext_reader($streamer, false);
 
 From now on, you have all the benefits of gettext data at your
 disposal, so may run:
@@ -102,40 +103,37 @@ disposal, so may run:
     print $wohoo->translate("This is a test");
     print $wohoo->ngettext("%d bird", "%d birds", $birds);
 
-You might need to pass parameter `-k` to xgettext to make it
+You might need to pass parameter `-k` to `xgettext` to make it
 extract all the strings. In above example, try with
 
     xgettext -ktranslate -kngettext:1,2 file.php
 
-what should create messages.po which contains two messages for
+That should create `messages.po` which contains two messages for
 translation.
 
-I suggest creating simple aliases for these functions (see
-example/pigs.php for how do I do it, which means it's probably a
-bad way).
+I suggest creating simple aliases for these functions.
 
-Usage with gettext.inc (standard gettext interfaces emulation)
+### Standard gettext interface emulation
 
-Check example in examples/pig_dropin.php, basically you include
-gettext.inc and use all the standard gettext interfaces as
+Check example in `examples/pigs_dropin.php`, basically you can use all the standard gettext interfaces as
 documented on:
 
        https://www.php.net/gettext
 
-The only catch is that you can check return value of setlocale()
+The only catch is that you can check the return value of `setlocale()`
 to see if your locale is system supported or not.
 
 
-## Example
+## Examples
 
-See in examples/ subdirectory. There are a couple of files.
-pigs.php is an example, serbian.po is a translation to Serbian
-language, and serbian.mo is generated with
+See in the `examples/` subdirectory. There are a couple of files.
+pigs_dropin.php is an example, sr_CS/LC_MESSAGES/messages.po is a translation to Serbian
+language, and messages.mo is generated with
 
-    msgfmt -o serbian.mo serbian.po
+    msgfmt -o messages.mo messages.po
 
-There is also simple "update" script that can be used to generate
-POT file and to update the translation using msgmerge.
+There is also a simple `update.sh` script that can be used to generate
+POT file and to update the translation using `msgmerge`.
 
 ## TODO
 
