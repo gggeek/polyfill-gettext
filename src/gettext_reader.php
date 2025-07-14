@@ -61,7 +61,7 @@ class gettext_reader {
    */
   function __construct($Reader, $enable_cache = true) {
     // If there isn't a StreamReader, turn on short circuit mode.
-    if (! $Reader || isset($Reader->error) ) {
+    if (! $Reader || (isset($Reader->error) && $Reader->error != 0)) {
       $this->short_circuit = true;
       return;
     }
@@ -246,6 +246,7 @@ class gettext_reader {
   public function translate($string) {
     if ($this->short_circuit)
       return $string;
+
     $this->load_tables();
 
     if ($this->enable_cache) {
