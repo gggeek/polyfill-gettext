@@ -26,8 +26,8 @@
 use PGetText\T;
 
 
-// LC_MESSAGES is not available if gettext is not loaded
-// while the other constants are already available from the session extension.
+// LC_MESSAGES is not available if php has not been compiled with libintl,
+// while the other constants are always available.
 if (!defined('LC_MESSAGES')) {
   define('LC_MESSAGES',	5);
 }
@@ -131,7 +131,7 @@ if (!function_exists('gettext')) {
   }
 }
 
-/// @todo is it possible that `setlocale` is not available?
+/// @todo is it possible that `setlocale` is not available? It is defined in ext/standard/string.c...
 if (!function_exists('setlocale')) {
   /**
    * @param int $category
