@@ -66,5 +66,5 @@
 | global var | $text_domains              | PGetText\T::$text_domains              | protected static class member |
 | global var | $default_domain            | PGetText\T::$default_domain            | protected static class member |
 | global var | $LC_CATEGORIES             | PGetText\T::$LC_CATEGORIES             | protected static class member |
-| global var | $EMULATEGETTEXT            | PGetText\T::$EMULATEGETTEXT            | protected static class member |
-| global var | $CURRENTLOCALE             | PGetText\T::$CURRENTLOCALE             | protected static class member |
+| global var | $EMULATEGETTEXT            | PGetText\T::$emulate_gettext           | protected static class member |
+| global var | $CURRENTLOCALE             | PGetText\T::$current_locale            | protected static class member |
