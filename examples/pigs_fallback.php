@@ -3,20 +3,20 @@
    Copyright (c) 2003,2004,2005,2009 Danilo Segan <danilo@kvota.net>.
    Copyright (c) 2005,2006 Steven Armstrong <sa@c-area.ch>
 
-   This file is part of PHP-gettext.
+   This file is part of Polyfill-Gettext.
 
-   PHP-gettext is free software; you can redistribute it and/or modify
+   Polyfill-Gettext is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
 
-   PHP-gettext is distributed in the hope that it will be useful,
+   Polyfill-Gettext is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with PHP-gettext; if not, write to the Free Software
+   along with Polyfill-Gettext; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 */
@@ -35,7 +35,7 @@ use PGetText\T;
 $supported_locales = array('en_US', 'sr_CS', 'de_CH');
 $encoding = 'UTF-8';
 
-$locale = (isset($_GET['lang']))? $_GET['lang'] : DEFAULT_LOCALE;
+$locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
 
 // gettext setup
 T::setlocale(LC_MESSAGES, $locale);
@@ -49,11 +49,11 @@ header("Content-type: text/html; charset=$encoding");
 ?>
 <html>
 <head>
-<title>PHP-gettext fallback example</title>
+<title>Polyfill-Gettext fallback example</title>
 </head>
 <body>
-<h1>PHP-gettext as a fallback solution</h1>
-<p>Example showing how to use PHP-gettext as a fallback solution if the native gettext library is not available or the system does not support the requested locale.</p>
+<h1>Polyfill-Gettext as a fallback solution</h1>
+<p>Example showing how to use Polyfill-Gettext as a fallback solution if the native gettext library is not available or the system does not support the requested locale.</p>
 
 <?php
 print "<p>";
@@ -63,17 +63,17 @@ foreach($supported_locales as $l) {
 print "</p>\n";
 
 if (!T::locale_emulation()) {
-	print "<p>locale '$locale' is supported by your system, using native gettext implementation.</p>\n";
+	print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system, using native gettext implementation.</p>\n";
 }
 else {
-	print "<p>locale '$locale' is <strong>not</strong> supported on your system, using custom gettext implementation.</p>\n";
+	print "<p>locale '" . htmlspecialchars($locale) . "' is <strong>not</strong> supported on your system, using custom gettext implementation.</p>\n";
 }
 ?>
 
 <hr />
 
 <?php
-// using PHP-gettext
+// using Polyfill-Gettext
 print "<pre>";
 print T::_("This is how the story goes.\n\n");
 for ($number=6; $number>=0; $number--) {
