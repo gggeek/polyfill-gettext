@@ -28,11 +28,11 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 // define constants
 define('PROJECT_DIR', __DIR__);
 define('LOCALE_DIR', PROJECT_DIR .'/locale');
-define('DEFAULT_LOCALE', 'en_US');
+define('DEFAULT_LOCALE', setlocale(5, 0));
 
 use PGetText\T;
 
-$supported_locales = array('en_US', 'sr_CS', 'de_CH');
+$supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_CS', 'de_CH');
 $encoding = 'UTF-8';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
@@ -54,17 +54,24 @@ header("Content-type: text/html; charset=$encoding");
 <h1>Polyfill-Gettext as a drop-in replacement</h1>
 <p>Example showing how to use Polyfill-Gettext as a drop-in replacement for the native gettext library.</p>
 <?php
+
+if (extension_loaded('gettext')) {
+  print "<p>NB: The native gettext extension is active on this PHP installation</p>\n";
+} else {
+  print "<p>NB: The native gettext extension is not active on this PHP installation</p>\n";
+}
+
 print "<p>";
 foreach($supported_locales as $l) {
 	print "[<a href=\"?lang=$l\">$l</a>] ";
 }
 print "</p>\n";
 
-if (!T::locale_emulation()) {
-	print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system, using native gettext implementation.</p>\n";
+if (T::locale_emulation()) {
+  print "<p>locale '" . htmlspecialchars($locale) . "' is _not_ supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
 }
 else {
-	print "<p>locale '" . htmlspecialchars($locale) . "' is _not_ supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
+  print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system, using native gettext implementation.</p>\n";
 }
 ?>
 
