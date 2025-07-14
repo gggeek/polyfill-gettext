@@ -84,11 +84,11 @@ class ParsingTest extends PGetText_PolyfillTestCase
                                  $number);
     $this->assertSame($expected, $result);
   }
+
   public static function data_provider_test_npgettext() {
     return array(
-                 array(1, "%d pig went to the market\n"),
-                 array(2, "%d pigs went to the market\n"),
-                 );
+      array(1, "%d pig went to the market\n"),
+      array(2, "%d pigs went to the market\n"),
+    );
   }
-
 }
