@@ -212,7 +212,7 @@ class T
     if (static::_check_locale_and_function('_'))
       return _($message);
     else
-      return static::__($message);
+      return static::_gettext($message);
   }
 
   /**
@@ -236,7 +236,7 @@ class T
    * @return string|false
    */
   public static function bindtextdomain($domain, $path) {
-    if (static::_check_locale_and_function())
+    if (static::_check_locale_and_function('bindtextdomain'))
       return bindtextdomain($domain, $path);
     else
       return static::_bindtextdomain($domain, $path);
@@ -332,7 +332,7 @@ class T
    * @return string
    */
   public static function textdomain($domain) {
-    if (static::_check_locale_and_function())
+    if (static::_check_locale_and_function('textdomain'))
       return textdomain($domain);
     else
       return static::_textdomain($domain);
@@ -435,10 +435,16 @@ class T
 
   /**
    * Returns whether we are using our emulated gettext API (true) or the PHP built-in one (false).
+   * @param null|bool $emulateGettext pass in a bool value to change the current value instead of just querying it.
+   *                                  Note that the library does its best to determine the correct value on its own,
+   *                                  you should normally not have to force this.
    * @return bool
    * @todo allow this to set a value, too
    */
-  public static function locale_emulation() {
+  public static function locale_emulation($emulateGettext = null) {
+    if ($emulateGettext !== null) {
+      static::$EMULATEGETTEXT = (bool)$emulateGettext;
+    }
     return static::$EMULATEGETTEXT;
   }
 
