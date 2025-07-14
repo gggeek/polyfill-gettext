@@ -9,10 +9,10 @@ class T
   protected static $text_domains = array();
   protected static $default_domain = 'messages';
   /**
-   * Null as long as it has not been initialized
-   * @var null|bool
+   * The keys are locale names
+   * @var bool[]
    */
-  protected static $emulate_gettext = null;
+  protected static $emulate_locales = array();
   protected static $current_locale = '';
   protected static $emulated_functions = array();
 
@@ -406,67 +406,87 @@ class T
    *        LC_MESSAGES     5
    *        LC_ALL          6
    * @param string|null $locale
+   * @return string|false
    */
   public static function setlocale($category, $locale) {
+    if ($category != 6 && $category != 5) {
+      trigger_error("Function T::setlocale only accepts LC_MESSAGES and LC_ALL", E_USER_WARNING);
+      return false;
+    }
+
     /// @todo emit a warning if we get passed a string for $category, as recent php versions do
-    /// @todo we use === to differentiate between 0 and string "0", but should we?
-    if ($locale === 0) {
-      if (static::$current_locale != '')
-        return static::$current_locale;
+
+    if ($locale === 0 || $locale === '0') {
+      $locale = static::_get_current_locale();
+      return $category == 6 ? "LC_MESSAGES=" . $locale : $locale;
+      /*if (static::$current_locale != '')
+        return $category == 6 ? "LC_MESSAGES=" . static::$current_locale : static::$current_locale;
       else
         // obey LANG variable, maybe extend to support all of LC_* vars
         // even if we tried to read locale without setting it first
-        /// @todo make sure we avoid loops
-        return static::setlocale($category, static::$current_locale);
+        /// @todo make sure we avoid loops - $current_locale should never be 0 or '0'
+        return static::_get_current_locale($category, static::$current_locale);*/
     } else {
-      // make sure the `setlocale` function is not the polyfill, to avoid loops!
+      // we make sure the `setlocale` function is not the polyfill, to avoid loops!
       if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
+/// @todo pass to setlocale all args we received - and modify the check for failure below
         $ret = setlocale($category, $locale);
         if (($locale == '' and !$ret) or // failed setting it from env vars
           ($locale != '' and $ret != $locale)) { // failed setting it
-          // Failed setting it according to environment.
+          // Failed setting it according to environment. Enable emulation for the current locale
           static::$current_locale = static::_get_default_locale($locale);
-          static::$emulate_gettext = true;
+          static::$emulate_locales[static::$current_locale] = true;
         } else {
+          // Locale successfully set. Disable emulation for the current locale (this does not mean we will try to call
+          // non-existing gettext methods)
           static::$current_locale = $ret;
-          static::$emulate_gettext = false;
+          static::$emulate_locales[static::$current_locale] = false;
         }
       } else {
         // No function setlocale(), emulate it all.
         static::$current_locale = static::_get_default_locale($locale);
-        static::$emulate_gettext = true;
+        static::$emulate_locales[static::$current_locale] = true;
       }
+
       // Allow locale to be changed on the go for one translation domain.
       if (array_key_exists(static::$default_domain, static::$text_domains)) {
         unset(static::$text_domains[static::$default_domain]->l10n);
       }
+
       return static::$current_locale;
     }
   }
 
   /**
    * Returns whether we are using our emulated gettext API (true) or the PHP built-in one (false).
-   * @param null|bool $emulateGettext pass in a bool value to change the current value instead of just querying it.
+   * @param null|bool $emulateLocale pass in a bool value to change the current value instead of just querying it.
    *                                  Note that the library does its best to determine the correct value on its own,
    *                                  you should normally not have to force this.
-   * @return bool
-   * @todo rename? `gettext_emulation` seems more appropriate
+   * @param null|string $locale
+   * @return bool|null
    */
-  public static function locale_emulation($emulateGettext = null) {
-    if ($emulateGettext !== null) {
-      static::$emulate_gettext = (bool)$emulateGettext;
+  public static function locale_emulation($emulateLocale = null, $locale = null) {
+    if ($locale == '') {
+      $locale = static::_get_current_locale();
     }
-    return static::$emulate_gettext;
+    if ($emulateLocale !== null) {
+      static::$emulate_locales[$locale] = (bool)$emulateLocale;
+    }
+    return isset(static::$emulate_locales[$locale]) ? static::$emulate_locales[$locale] : null;
   }
 
   /**
    * Notify the T class that it is used to emulate a given native php function
    * @param string $function
-   * @return void
+   * @param null|bool $doEmulate
+   * @return bool|null
    */
-  public static function emulate_function($function)
+  public static function emulate_function($function, $doEmulate = true)
   {
-    static::$emulated_functions[$function] = true;
+    if ($doEmulate !== null) {
+      static::$emulated_functions[$function] = (bool)$doEmulate;
+    }
+    return isset(static::$emulated_functions[$function]) ? static::$emulated_functions[$function] : null;
   }
 
   /**
@@ -558,13 +578,17 @@ class T
   /**
    * Check if the current locale and specified function is supported on this system.
    * @param string|false $function
+   * @param string|null $locale to check a locale other than the current one
    * @return bool true means the locale/function is supported and needs no emulation
-   * @todo move here the initialization of $emulate_gettext
    */
-  protected static function _check_locale_and_function($function=false) {
+  protected static function _check_locale_and_function($function=false, $locale=null) {
     if ($function and (isset(static::$emulated_functions[$function]) || !function_exists($function)))
       return false;
-    return !static::$emulate_gettext;
+    if ($locale == '') {
+      $locale = static::_get_current_locale();
+    }
+//// @todo move here the initialization of $emulate_locales[$locale]
+    return !static::$emulate_locales[$locale];
   }
 
   /**
@@ -574,7 +598,7 @@ class T
    */
   protected static function _get_codeset($domain=null) {
     if (!isset($domain)) $domain = static::$default_domain;
-    return (isset(static::$text_domains[$domain]->codeset))? static::$text_domains[$domain]->codeset : (
+    return isset(static::$text_domains[$domain]->codeset) ? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
         /// @todo should we default to this? Esp. for php 5.x? Or leave an empty string and handle it while transcoding
         ini_get('internal_encoding') != '' ? ini_get('mbstring.internal_encoding') : ('UTF-8')
@@ -605,11 +629,31 @@ class T
    * @return string|false
    * @todo check if we should support other env vars, as per
    *       https://www.gnu.org/software/gettext/manual/gettext.html#Locale-Environment-Variables-1
+   * @todo rename?
    */
   protected static function _get_default_locale($locale) {
-    if ($locale == '') // emulate variable support
+    if ($locale == '')
       return getenv('LANG');
     else
       return $locale;
+  }
+
+
+  /**
+   * @return string|null
+   */
+  protected static function _get_current_locale() {
+    if (static::$current_locale != '') {
+      return static::$current_locale;
+    }
+
+    // we use a setlocale(LC_MESSAGES, 0) call, followed by analysis of env vars, to determine the current locale
+    if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
+      $locale = setlocale(5, 0);
+      if ($locale !== false) {
+        return $locale;
+      }
+    }
+    return static::_get_default_locale('');
   }
 }

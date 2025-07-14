@@ -6,37 +6,50 @@ use PGetText\T;
 
 class LocaleTest extends PGetText_PolyfillTestCase
 {
-  public function test_setlocale()
+  public function test_setlocale_by_env_var()
   {
+    if (!function_exists('setlocale') || T::emulate_function('setlocale', null)) {
+      $this->markTestSkipped('no native setlocale function found');
+    }
+    // T::setlocale defaults to a locale name from environment variable LANG - as long as the native setlocale method
+    // returns false.
+    $locale = 'C.utf8';
     putenv("LC_ALL=");
-    // T::setlocale defaults to a locale name from environment variable LANG.
-    putenv("LANG=sr_RS");
-    $this->assertEquals('sr_RS', T::setlocale(LC_MESSAGES, 0));
+    putenv("LANG=$locale");
+    if (setlocale(LC_MESSAGES, '') === false) {
+      $this->markTestSkipped('native setlocale function failed setting locale from env var');
+    }
+
+    $this->assertEquals($locale, T::setlocale(LC_MESSAGES, 0));
+    $this->assertEquals('LC_MESSAGES=' . $locale, T::setlocale(LC_ALL, 0));
+
   }
 
   public function test_setlocale_system()
   {
-    putenv("LC_ALL=");
     // For an existing locale, it never needs emulation.
-    putenv("LANG=C");
-    T::setlocale(LC_MESSAGES, "");
-    $this->assertEquals(0, T::locale_emulation());
+    $locale = 'C';
+    T::setlocale(LC_MESSAGES, $locale);
+    $this->assertEquals($locale, T::setlocale(LC_MESSAGES, 0));
+    $this->assertEquals('LC_MESSAGES=' . $locale, T::setlocale(LC_ALL, 0));
+    $this->assertEquals($locale, setlocale(LC_MESSAGES, 0));
+    $this->assertEquals(false, T::locale_emulation());
   }
 
   public function test_setlocale_emulation()
   {
-    putenv("LC_ALL=");
-    // If we set it to a non-existent locale, it still works, but uses
-    // emulation.
-    T::setlocale(LC_MESSAGES, "xxx_XXX");
-    $this->assertEquals('xxx_XXX', T::setlocale(LC_MESSAGES, 0));
-    $this->assertEquals(1, T::locale_emulation());
+    // If we set it to a non-existent locale, it still works, but uses emulation.
+    $locale = 'xxx_XXX';
+    T::setlocale(LC_MESSAGES, $locale);
+    $this->assertEquals($locale, T::setlocale(LC_MESSAGES, 0));
+    $this->assertEquals('LC_MESSAGES=' . $locale, T::setlocale(LC_ALL, 0));
+    $this->assertNotEquals($locale, setlocale(5, 0));
+    $this->assertEquals(true, T::locale_emulation());
   }
 
   public function test_get_list_of_locales()
   {
-    // For a locale containing country code, we prefer
-    // full locale name, but if that's not found, fall back
+    // For a locale containing country code, we prefer full locale name, but if that's not found, fall back
     // to the language only locale name.
     $this->assertEquals(array("sr_RS", "sr"),
       T::get_list_of_locales("sr_RS"));
