@@ -22,6 +22,8 @@
 
 namespace PGetText;
 
+use PGetText\Streams\StreamReaderInterface;
+
 /**
  * Provides a simple gettext replacement that works independently from
  * the system's gettext abilities.
@@ -54,8 +56,8 @@ class gettext_reader {
   /**
    * Constructor
    *
-   * @param null|object $Reader the StreamReader object
-   * @param boolean $enable_cache Enable or disable caching of strings (default on)
+   * @param StreamReaderInterface|null $Reader the StreamReader object
+   * @param bool $enable_cache Enable or disable caching of strings (default on)
    */
   function __construct($Reader, $enable_cache = true) {
     // If there isn't a StreamReader, turn on short circuit mode.
@@ -78,7 +80,6 @@ class gettext_reader {
       $this->BYTEORDER = 0;
     } else {
       $this->error = 1; // not MO file
-      //return false;
     }
 
     /// @todo FIXME: Do we care about revision? We should.
@@ -106,6 +107,10 @@ class gettext_reader {
     }
   }
 
+  /**
+   * @param int $bytes
+   * @return false|string
+   */
   function read($bytes) {
     return $this->STREAM->read($bytes);
   }

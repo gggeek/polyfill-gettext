@@ -2,27 +2,26 @@
 
 namespace PGetText\Streams;
 
-class FileReader
+class FileReader implements StreamReaderInterface
 {
-  var $_pos;
-  var $_fd;
-  var $_length;
+  public $_pos;
+  public $_fd;
+  public $_length;
+  public $error = 0; // public variable that holds error code (0 if no error)
 
   /// @todo declare error as object member
 
   function __construct($filename) {
     if (file_exists($filename)) {
 
-      $this->_length=filesize($filename);
+      $this->_length = filesize($filename);
       $this->_pos = 0;
       $this->_fd = fopen($filename,'rb');
       if (!$this->_fd) {
         $this->error = 3; // Cannot read file, probably permissions
-        return false;
       }
     } else {
       $this->error = 2; // File doesn't exist
-      return false;
     }
   }
 
@@ -44,8 +43,8 @@ class FileReader
     } else return '';
   }
 
-  function seekto($pos) {
-    fseek($this->_fd, $pos);
+  function seekto($position) {
+    fseek($this->_fd, $position);
     $this->_pos = ftell($this->_fd);
     return $this->_pos;
   }

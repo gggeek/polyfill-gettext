@@ -6,9 +6,9 @@ namespace PGetText\Streams;
  * Simple class to wrap file streams, string streams, etc.
  * Seek is essential, and it should be byte stream
  *
- * @todo implement an interface
+ * @todo implement - this seems broken atm
  */
-class StreamReader
+class StreamReader implements StreamReaderInterface
 {
   // should return a string [FIXME: perhaps return array of bytes?]
   function read($bytes) {

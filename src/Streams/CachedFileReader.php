@@ -8,6 +8,8 @@ namespace PGetText\Streams;
  */
 class CachedFileReader extends StringReader
 {
+  public $error = 0; // public variable that holds error code (0 if no error)
+
   /**
    * @param string $filename
    */
@@ -19,14 +21,12 @@ class CachedFileReader extends StringReader
 
       if (!$fd) {
         $this->error = 3; // Cannot read file, probably permissions
-        return false;
       }
       $this->_str = fread($fd, $length);
       fclose($fd);
 
     } else {
       $this->error = 2; // File doesn't exist
-      return false;
     }
   }
 }

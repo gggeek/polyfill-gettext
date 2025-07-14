@@ -2,10 +2,10 @@
 
 namespace PGetText\Streams;
 
-class StringReader
+class StringReader implements StreamReaderInterface
 {
-  var $_pos;
-  var $_str;
+  public $_pos;
+  public $_str;
 
   function __construct($str='') {
     $this->_str = $str;
@@ -21,8 +21,8 @@ class StringReader
     return $data;
   }
 
-  function seekto($pos) {
-    $this->_pos = $pos;
+  function seekto($position) {
+    $this->_pos = $position;
     if (strlen($this->_str) < $this->_pos)
       $this->_pos = strlen($this->_str);
     return $this->_pos;
