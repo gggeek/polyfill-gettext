@@ -25,7 +25,6 @@
 
 use PGetText\T;
 
-
 // LC_MESSAGES is not available if php has not been compiled with libintl,
 // while the other constants are always available.
 if (!defined('LC_MESSAGES')) {
@@ -43,6 +42,7 @@ if (!function_exists('gettext')) {
   function _($message) {
     return gettext($message);
   }
+  T::emulate_function('_');
 
   /**
    * @param string $domain
@@ -52,15 +52,17 @@ if (!function_exists('gettext')) {
   function  bind_textdomain_codeset($domain, $codeset = null) {
     return T::_bind_textdomain_codeset($domain, $codeset);
   }
+  T::emulate_function('bind_textdomain_codeset');
 
   /**
    * @param string $domain
    * @param string|null $directory
    * @return string|false
    */
-  function  bindtextdomain($domain, $directory = null) {
+  function bindtextdomain($domain, $directory = null) {
     return T::_bindtextdomain($domain, $directory);
   }
+  T::emulate_function('bindtextdomain');
 
   /**
    * @param string $domain
@@ -71,6 +73,7 @@ if (!function_exists('gettext')) {
   function dcgettext($domain, $message, $category) {
     return T::_dcgettext($domain, $message, $category);
   }
+  T::emulate_function('dcgettext');
 
   /**
    * @param string $domain
@@ -83,6 +86,7 @@ if (!function_exists('gettext')) {
   function dcngettext($domain, $singular, $plural, $count, $category) {
     return T::_dcngettext($domain, $singular, $plural, $count, $category);
   }
+  T::emulate_function('dcngettext');
 
   /**
    * @param string $domain
@@ -92,6 +96,7 @@ if (!function_exists('gettext')) {
   function dgettext($domain, $message) {
     return T::_dgettext($domain, $message);
   }
+  T::emulate_function('dgettext');
 
   /**
    * @param string $domain
@@ -103,6 +108,7 @@ if (!function_exists('gettext')) {
   function dngettext($domain, $singular, $plural, $count) {
     return T::_dngettext($domain, $singular, $plural, $count);
   }
+  T::emulate_function('dngettext');
 
   /**
    * @param string $message
@@ -111,6 +117,7 @@ if (!function_exists('gettext')) {
   function gettext($message) {
     return T::_gettext($message);
   }
+  T::emulate_function('gettext');
 
   /**
    * @param string $singular
@@ -121,6 +128,7 @@ if (!function_exists('gettext')) {
   function ngettext($singular, $plural, $count) {
     return T::_ngettext($singular, $plural, $count);
   }
+  T::emulate_function('ngettext');
 
   /**
    * @param string|null $domain
@@ -129,9 +137,10 @@ if (!function_exists('gettext')) {
   function textdomain($domain = null) {
     return T::_textdomain($domain);
   }
+  T::emulate_function('textdomain');
 }
 
-/// @todo is it possible that `setlocale` is not available? It is defined in ext/standard/string.c...
+/// @todo is it possible that `setlocale` is ever not available? It is defined in ext/standard/string.c...
 if (!function_exists('setlocale')) {
   /**
    * @param int $category
@@ -143,4 +152,5 @@ if (!function_exists('setlocale')) {
   {
     return call_user_func_array(array('T', 'setlocale'), func_get_args());
   }
+  T::emulate_function('setlocale');
 }

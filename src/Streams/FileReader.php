@@ -9,8 +9,6 @@ class FileReader implements StreamReaderInterface
   public $_length;
   public $error = 0; // public variable that holds error code (0 if no error)
 
-  /// @todo declare error as object member
-
   function __construct($filename) {
     if (file_exists($filename)) {
 

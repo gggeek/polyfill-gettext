@@ -14,7 +14,10 @@ class T
    */
   protected static $emulate_gettext = null;
   protected static $current_locale = '';
-  /**
+  protected static $emulated_functions = array();
+
+    /**
+   * Note: the index value is the numeric value of the php constant of the same name as the value
    * @see https://www.php.net/manual/en/function.setlocale.php
    * @var string[]
    */
@@ -401,11 +404,11 @@ class T
    *        LC_COLLATE      3
    *        LC_MONETARY     4
    *        LC_MESSAGES     5
-   *        LC_ALL          6 ???
+   *        LC_ALL          6
    * @param string|null $locale
    */
   public static function setlocale($category, $locale) {
-    /// @todo emit a warning if we get passed a string for $category
+    /// @todo emit a warning if we get passed a string for $category, as recent php versions do
     /// @todo we use === to differentiate between 0 and string "0", but should we?
     if ($locale === 0) {
       if (static::$current_locale != '')
@@ -416,8 +419,8 @@ class T
         /// @todo make sure we avoid loops
         return static::setlocale($category, static::$current_locale);
     } else {
-      /// @todo make sure the `setlocale` function is not the polyfill, to avoid loops!
-      if (function_exists('setlocale')) {
+      // make sure the `setlocale` function is not the polyfill, to avoid loops!
+      if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
         $ret = setlocale($category, $locale);
         if (($locale == '' and !$ret) or // failed setting it from env vars
           ($locale != '' and $ret != $locale)) { // failed setting it
@@ -447,7 +450,7 @@ class T
    *                                  Note that the library does its best to determine the correct value on its own,
    *                                  you should normally not have to force this.
    * @return bool
-   * @todo allow this to set a value, too
+   * @todo rename? `gettext_emulation` seems more appropriate
    */
   public static function locale_emulation($emulateGettext = null) {
     if ($emulateGettext !== null) {
@@ -457,14 +460,23 @@ class T
   }
 
   /**
+   * Notify the T class that it is used to emulate a given native php function
+   * @param string $function
+   * @return void
+   */
+  public static function emulate_function($function)
+  {
+    static::$emulated_functions[$function] = true;
+  }
+
+  /**
    * Return a list of locales to try for any POSIX-style locale specification.
    * @param string $locale
    * @return string[]
    */
   public static function get_list_of_locales($locale) {
-    /* Figure out all possible locale names and start with the most specific ones.
-     * I.e. for sr_CS.UTF-8@latin, look through all of sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
-     */
+    // Figure out all possible locale names and start with the most specific ones.
+    // I.e. for sr_CS.UTF-8@latin, look through all of sr_CS.UTF-8@latin, sr_CS@latin, sr@latin, sr_CS.UTF-8, sr_CS, sr.
     $locale_names = array();
     $lang = NULL;
     $country = NULL;
@@ -509,13 +521,16 @@ class T
 
   /**
    * Utility function to get a StreamReader for the given text domain.
+   * @param string|null $domain
+   * @param int $category see the LC_ constants. 5 = LC_MESSAGES
+   * @param bool $enable_cache
    * @return gettext_reader
    */
   protected static function _get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
     if (!isset(static::$text_domains[$domain]->l10n)) {
-      // get the current locale
-      $locale = static::setlocale(LC_MESSAGES, 0);
+      // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
+      $locale = static::setlocale(5, 0);
       $bound_path = isset(static::$text_domains[$domain]->path) ?
         static::$text_domains[$domain]->path : './';
       $subpath = static::$LC_CATEGORIES[$category] ."/$domain.mo";
@@ -541,13 +556,13 @@ class T
   }
 
   /**
-   * Checks if the current locale and functiom is supported on this system.
+   * Check if the current locale and specified function is supported on this system.
    * @param string|false $function
-   * @return bool true means the locale is supported and needs no emulation (our own reimplementation)
+   * @return bool true means the locale/function is supported and needs no emulation
    * @todo move here the initialization of $emulate_gettext
    */
   protected static function _check_locale_and_function($function=false) {
-    if ($function and !function_exists($function))
+    if ($function and (isset(static::$emulated_functions[$function]) || !function_exists($function)))
       return false;
     return !static::$emulate_gettext;
   }
@@ -561,7 +576,7 @@ class T
     if (!isset($domain)) $domain = static::$default_domain;
     return (isset(static::$text_domains[$domain]->codeset))? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
-        /// @todo should we default to this? Esp. for php 5.x?
+        /// @todo should we default to this? Esp. for php 5.x? Or leave an empty string and handle it while transcoding
         ini_get('internal_encoding') != '' ? ini_get('mbstring.internal_encoding') : ('UTF-8')
       )
     );
@@ -572,7 +587,7 @@ class T
    * @param string $text
    * @return string
    * @todo move to a separate class?
-   * @todo add charset conversion based on other php extensions: iconv?
+   * @todo add charset conversion based on other php extensions/classes/methods: iconv, Uconverter, utf8_encode and co.
    */
   protected static function _encode($text) {
     $target_encoding = static::_get_codeset();
