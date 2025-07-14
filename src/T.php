@@ -28,7 +28,6 @@ class T
    * @return string|false
    */
   public static function _bind_textdomain_codeset($domain, $codeset = null) {
-    //global $text_domains;
     /// @todo throw a ValueError if $domain == ''
     if ($codeset === null) {
       return static::$text_domains[$domain]->codeset;
@@ -46,7 +45,6 @@ class T
    * @return string|false
    */
   public static function _bindtextdomain($domain, $directory = null) {
-    //global $text_domains;
     // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
     if ($directory !== null) {
       if ($directory === '') {
@@ -148,7 +146,6 @@ class T
    * @return string
    */
   public static function _textdomain($domain = null) {
-    //global $default_domain;
     /// @todo throw a ValueError if $domain === ''
     if ($domain !== null) {
       static::$default_domain = $domain;
@@ -400,7 +397,6 @@ class T
    * @param string|null $locale
    */
   public static function setlocale($category, $locale) {
-    //global $CURRENTLOCALE, $EMULATEGETTEXT;
     /// @todo emit a warning if we get passed a string for $category
     /// @todo we use === to differentiate between 0 and string "0", but should we?
     if ($locale === 0) {
@@ -430,7 +426,6 @@ class T
         static::$EMULATEGETTEXT = true;
       }
       // Allow locale to be changed on the go for one translation domain.
-      //global $text_domains, $default_domain;
       if (array_key_exists(static::$default_domain, static::$text_domains)) {
         unset(static::$text_domains[static::$default_domain]->l10n);
       }
@@ -444,7 +439,6 @@ class T
    * @todo allow this to set a value, too
    */
   public static function locale_emulation() {
-    //global $EMULATEGETTEXT;
     return static::$EMULATEGETTEXT;
   }
 
@@ -504,7 +498,6 @@ class T
    * @return gettext_reader
    */
   protected static function _get_reader($domain=null, $category=5, $enable_cache=true) {
-    //global $text_domains, $default_domain, $LC_CATEGORIES;
     if (!isset($domain)) $domain = static::$default_domain;
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale
@@ -540,7 +533,6 @@ class T
    * @todo move here the initialization of $EMULATEGETTEXT
    */
   protected static function _check_locale_and_function($function=false) {
-    //global $EMULATEGETTEXT;
     if ($function and !function_exists($function))
       return false;
     return !static::$EMULATEGETTEXT;
@@ -552,7 +544,6 @@ class T
    * @return string
    */
   protected static function _get_codeset($domain=null) {
-    //global $text_domains, $default_domain, $LC_CATEGORIES;
     if (!isset($domain)) $domain = static::$default_domain;
     return (isset(static::$text_domains[$domain]->codeset))? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
