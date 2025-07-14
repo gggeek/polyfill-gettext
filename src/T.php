@@ -8,9 +8,17 @@ class T
 {
   protected static $text_domains = array();
   protected static $default_domain = 'messages';
+  /**
+   * Null as long as it has not been initialized
+   * @var null|bool
+   */
+  protected static $emulate_gettext = null;
+  protected static $current_locale = '';
+  /**
+   * @see https://www.php.net/manual/en/function.setlocale.php
+   * @var string[]
+   */
   protected static $LC_CATEGORIES = array('LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL');
-  protected static $EMULATEGETTEXT = false;
-  protected static $CURRENTLOCALE = '';
 
   // *** Custom implementation of the standard gettext related functions, plus a few similar ones ***
 
@@ -400,13 +408,13 @@ class T
     /// @todo emit a warning if we get passed a string for $category
     /// @todo we use === to differentiate between 0 and string "0", but should we?
     if ($locale === 0) {
-      if (static::$CURRENTLOCALE != '')
-        return static::$CURRENTLOCALE;
+      if (static::$current_locale != '')
+        return static::$current_locale;
       else
         // obey LANG variable, maybe extend to support all of LC_* vars
         // even if we tried to read locale without setting it first
         /// @todo make sure we avoid loops
-        return static::setlocale($category, static::$CURRENTLOCALE);
+        return static::setlocale($category, static::$current_locale);
     } else {
       /// @todo make sure the `setlocale` function is not the polyfill, to avoid loops!
       if (function_exists('setlocale')) {
@@ -414,22 +422,22 @@ class T
         if (($locale == '' and !$ret) or // failed setting it from env vars
           ($locale != '' and $ret != $locale)) { // failed setting it
           // Failed setting it according to environment.
-          static::$CURRENTLOCALE = static::_get_default_locale($locale);
-          static::$EMULATEGETTEXT = true;
+          static::$current_locale = static::_get_default_locale($locale);
+          static::$emulate_gettext = true;
         } else {
-          static::$CURRENTLOCALE = $ret;
-          static::$EMULATEGETTEXT = false;
+          static::$current_locale = $ret;
+          static::$emulate_gettext = false;
         }
       } else {
         // No function setlocale(), emulate it all.
-        static::$CURRENTLOCALE = static::_get_default_locale($locale);
-        static::$EMULATEGETTEXT = true;
+        static::$current_locale = static::_get_default_locale($locale);
+        static::$emulate_gettext = true;
       }
       // Allow locale to be changed on the go for one translation domain.
       if (array_key_exists(static::$default_domain, static::$text_domains)) {
         unset(static::$text_domains[static::$default_domain]->l10n);
       }
-      return static::$CURRENTLOCALE;
+      return static::$current_locale;
     }
   }
 
@@ -443,9 +451,9 @@ class T
    */
   public static function locale_emulation($emulateGettext = null) {
     if ($emulateGettext !== null) {
-      static::$EMULATEGETTEXT = (bool)$emulateGettext;
+      static::$emulate_gettext = (bool)$emulateGettext;
     }
-    return static::$EMULATEGETTEXT;
+    return static::$emulate_gettext;
   }
 
   /**
@@ -536,12 +544,12 @@ class T
    * Checks if the current locale and functiom is supported on this system.
    * @param string|false $function
    * @return bool true means the locale is supported and needs no emulation (our own reimplementation)
-   * @todo move here the initialization of $EMULATEGETTEXT
+   * @todo move here the initialization of $emulate_gettext
    */
   protected static function _check_locale_and_function($function=false) {
     if ($function and !function_exists($function))
       return false;
-    return !static::$EMULATEGETTEXT;
+    return !static::$emulate_gettext;
   }
 
   /**
