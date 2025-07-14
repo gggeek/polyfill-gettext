@@ -141,6 +141,6 @@ if (!function_exists('setlocale')) {
    */
   function  setlocale($category, $locale)
   {
-    return call_user_func_array(array('T', '_setlocale'), func_get_args());
+    return call_user_func_array(array('T', 'setlocale'), func_get_args());
   }
 }
