@@ -85,8 +85,8 @@ class T
    * @return string
    */
   public static function _dcgettext($domain, $message, $category) {
-    $l10n = static::_get_reader($domain, $category);
-    return static::_encode($l10n->translate($message));
+    $l10n = static::get_reader($domain, $category);
+    return static::encode($l10n->translate($message));
   }
 
   /**
@@ -99,8 +99,8 @@ class T
    * @return string
    */
   public static function _dcngettext($domain, $singular, $plural, $count, $category) {
-    $l10n = static::_get_reader($domain, $category);
-    return static::_encode($l10n->ngettext($singular, $plural, $count));
+    $l10n = static::get_reader($domain, $category);
+    return static::encode($l10n->ngettext($singular, $plural, $count));
   }
 
   /**
@@ -111,8 +111,8 @@ class T
    */
   public static function _dgettext($domain, $message) {
     /// @todo throw ValueError if $domain is the empty string
-    $l10n = static::_get_reader($domain);
-    return static::_encode($l10n->translate($message));
+    $l10n = static::get_reader($domain);
+    return static::encode($l10n->translate($message));
   }
 
   /**
@@ -125,8 +125,8 @@ class T
    */
   public static function _dngettext($domain, $singular, $plural, $count) {
     /// @todo throw ValueError if $domain is the empty string
-    $l10n = static::_get_reader($domain);
-    return static::_encode($l10n->ngettext($singular, $plural, $count));
+    $l10n = static::get_reader($domain);
+    return static::encode($l10n->ngettext($singular, $plural, $count));
   }
 
   /**
@@ -135,8 +135,8 @@ class T
    * @return string
    */
   public static function _gettext($message) {
-    $l10n = static::_get_reader();
-    return static::_encode($l10n->translate($message));
+    $l10n = static::get_reader();
+    return static::encode($l10n->translate($message));
   }
 
   /**
@@ -147,8 +147,8 @@ class T
    * @return string
    */
   public static function _ngettext($singular, $plural, $count) {
-    $l10n = static::_get_reader();
-    return static::_encode($l10n->ngettext($singular, $plural, $count));
+    $l10n = static::get_reader();
+    return static::encode($l10n->ngettext($singular, $plural, $count));
   }
 
   /**
@@ -170,48 +170,48 @@ class T
    * Overrides the domain and category for a plural context-based lookup.
    */
   public static function _dcnpgettext($domain, $context, $singular, $plural, $number, $category) {
-    $l10n = static::_get_reader($domain, $category);
-    return static::_encode($l10n->npgettext($context, $singular, $plural, $number));
+    $l10n = static::get_reader($domain, $category);
+    return static::encode($l10n->npgettext($context, $singular, $plural, $number));
   }
 
   /**
    * Overrides the domain and category for a single context-based lookup.
    */
   public static function _dcpgettext($domain, $context, $message, $category) {
-    $l10n = static::_get_reader($domain, $category);
-    return static::_encode($l10n->pgettext($context, $message));
+    $l10n = static::get_reader($domain, $category);
+    return static::encode($l10n->pgettext($context, $message));
   }
 
   /**
    * Override the current domain in a context ngettext call.
    */
   public static function _dnpgettext($domain, $context, $singular, $plural, $number) {
-    $l10n = static::_get_reader($domain);
-    return static::_encode($l10n->npgettext($context, $singular, $plural, $number));
+    $l10n = static::get_reader($domain);
+    return static::encode($l10n->npgettext($context, $singular, $plural, $number));
   }
 
   /**
    * Override the current domain in a context gettext call.
    */
   public static function _dpgettext($domain, $context, $message) {
-    $l10n = static::_get_reader($domain);
-    return static::_encode($l10n->pgettext($context, $message));
+    $l10n = static::get_reader($domain);
+    return static::encode($l10n->pgettext($context, $message));
   }
 
   /**
    * Context version of ngettext.
    */
   public static function _npgettext($context, $singular, $plural, $number) {
-    $l10n = static::_get_reader();
-    return static::_encode($l10n->npgettext($context, $singular, $plural, $number));
+    $l10n = static::get_reader();
+    return static::encode($l10n->npgettext($context, $singular, $plural, $number));
   }
 
   /**
    * Context version of gettext.
    */
   public static function _pgettext($context, $message) {
-    $l10n = static::_get_reader();
-    return static::_encode($l10n->pgettext($context, $message));
+    $l10n = static::get_reader();
+    return static::encode($l10n->pgettext($context, $message));
   }
 
   // *** Wrappers to use if the standard gettext functions are available, but the current locale is not supported by the system. ***
@@ -220,7 +220,7 @@ class T
    * Alias for gettext.
    */
   public static function _($message) {
-    if (static::_check_locale_and_function('_'))
+    if (static::check_locale_and_function('_'))
       return _($message);
     else
       return static::_gettext($message);
@@ -234,7 +234,7 @@ class T
    */
   public static function bind_textdomain_codeset($domain, $codeset) {
     // bind_textdomain_codeset is available only in PHP 4.2.0+
-    if (static::_check_locale_and_function('bind_textdomain_codeset'))
+    if (static::check_locale_and_function('bind_textdomain_codeset'))
       return bind_textdomain_codeset($domain, $codeset);
     else
       return static::_bind_textdomain_codeset($domain, $codeset);
@@ -247,7 +247,7 @@ class T
    * @return string|false
    */
   public static function bindtextdomain($domain, $path) {
-    if (static::_check_locale_and_function('bindtextdomain'))
+    if (static::check_locale_and_function('bindtextdomain'))
       return bindtextdomain($domain, $path);
     else
       return static::_bindtextdomain($domain, $path);
@@ -261,7 +261,7 @@ class T
    * @return string
    */
   public static function dcgettext($domain, $msgid, $category) {
-    if (static::_check_locale_and_function('dcgettext'))
+    if (static::check_locale_and_function('dcgettext'))
       return dcgettext($domain, $msgid, $category);
     else
       return static::_dcgettext($domain, $msgid, $category);
@@ -277,7 +277,7 @@ class T
    * @return string
    */
   public static function dcngettext($domain, $singular, $plural, $number, $category) {
-    if (static::_check_locale_and_function('dcngettext'))
+    if (static::check_locale_and_function('dcngettext'))
       return dcngettext($domain, $singular, $plural, $number, $category);
     else
       return static::_dcngettext($domain, $singular, $plural, $number, $category);
@@ -290,7 +290,7 @@ class T
    * @return string
    */
   public static function dgettext($domain, $msgid) {
-    if (static::_check_locale_and_function('dgettext'))
+    if (static::check_locale_and_function('dgettext'))
       return dgettext($domain, $msgid);
     else
       return static::_dgettext($domain, $msgid);
@@ -305,7 +305,7 @@ class T
    * @return string
    */
   public static function dngettext($domain, $singular, $plural, $number) {
-    if (static::_check_locale_and_function('dngettext'))
+    if (static::check_locale_and_function('dngettext'))
       return dngettext($domain, $singular, $plural, $number);
     else
       return static::_dngettext($domain, $singular, $plural, $number);
@@ -317,7 +317,7 @@ class T
    * @return string
    */
   public static function gettext($message) {
-    if (static::_check_locale_and_function('gettext'))
+    if (static::check_locale_and_function('gettext'))
       return gettext($message);
     else
       return static::_gettext($message);
@@ -331,7 +331,7 @@ class T
    * @return string
    */
   public static function ngettext($singular, $plural, $number) {
-    if (static::_check_locale_and_function('ngettext'))
+    if (static::check_locale_and_function('ngettext'))
       return ngettext($singular, $plural, $number);
     else
       return static::_ngettext($singular, $plural, $number);
@@ -343,7 +343,7 @@ class T
    * @return string
    */
   public static function textdomain($domain) {
-    if (static::_check_locale_and_function('textdomain'))
+    if (static::check_locale_and_function('textdomain'))
       return textdomain($domain);
     else
       return static::_textdomain($domain);
@@ -352,42 +352,42 @@ class T
   // *** not in the PHP library ***
 
   public static function dcnpgettext($domain, $context, $singular, $plural, $number, $category) {
-    if (static::_check_locale_and_function('dcnpgettext'))
+    if (static::check_locale_and_function('dcnpgettext'))
       return dcnpgettext($domain, $context, $singular, $plural, $number, $category);
     else
       return static::_dcnpgettext($domain, $context, $singular, $plural, $number, $category);
   }
 
   public static function dcpgettext($domain, $context, $message, $category) {
-    if (static::_check_locale_and_function('dcpgettext'))
+    if (static::check_locale_and_function('dcpgettext'))
       return dcpgettext($domain, $context, $message, $category);
     else
       return static::_dcpgettext($domain, $context, $message, $category);
   }
 
   public static function dnpgettext($domain, $context, $singular, $plural, $number) {
-    if (static::_check_locale_and_function('dnpgettext'))
+    if (static::check_locale_and_function('dnpgettext'))
       return dnpgettext($domain, $context, $singular, $plural, $number);
     else
       return static::_dnpgettext($domain, $context, $singular, $plural, $number);
   }
 
   public static function dpgettext($domain, $context, $message) {
-    if (static::_check_locale_and_function('dpgettext'))
+    if (static::check_locale_and_function('dpgettext'))
       return dpgettext($domain, $context, $message);
     else
       return static::_dpgettext($domain, $context, $message);
   }
 
   public static function npgettext($context, $singular, $plural, $number) {
-    if (static::_check_locale_and_function('npgettext'))
+    if (static::check_locale_and_function('npgettext'))
       return npgettext($context, $singular, $plural, $number);
     else
       return static::_npgettext($context, $singular, $plural, $number);
   }
 
   public static function pgettext($context, $message) {
-    if (static::_check_locale_and_function('pgettext'))
+    if (static::check_locale_and_function('pgettext'))
       return pgettext($context, $message);
     else
       return static::_pgettext($context, $message);
@@ -417,7 +417,7 @@ class T
     /// @todo emit a warning if we get passed a string for $category, as recent php versions do
 
     if ($locale === 0 || $locale === '0') {
-      $locale = static::_get_current_locale();
+      $locale = static::get_current_locale();
       return $category == 6 ? "LC_MESSAGES=" . $locale : $locale;
       /*if (static::$current_locale != '')
         return $category == 6 ? "LC_MESSAGES=" . static::$current_locale : static::$current_locale;
@@ -425,7 +425,7 @@ class T
         // obey LANG variable, maybe extend to support all of LC_* vars
         // even if we tried to read locale without setting it first
         /// @todo make sure we avoid loops - $current_locale should never be 0 or '0'
-        return static::_get_current_locale($category, static::$current_locale);*/
+        return static::get_current_locale($category, static::$current_locale);*/
     } else {
       // we make sure the `setlocale` function is not the polyfill, to avoid loops!
       if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
@@ -434,7 +434,7 @@ class T
         if (($locale == '' and !$ret) or // failed setting it from env vars
           ($locale != '' and $ret != $locale)) { // failed setting it
           // Failed setting it according to environment. Enable emulation for the current locale
-          static::$current_locale = static::_get_default_locale($locale);
+          static::$current_locale = static::get_default_locale($locale);
           static::$emulate_locales[static::$current_locale] = true;
         } else {
           // Locale successfully set. Disable emulation for the current locale (this does not mean we will try to call
@@ -444,7 +444,7 @@ class T
         }
       } else {
         // No function setlocale(), emulate it all.
-        static::$current_locale = static::_get_default_locale($locale);
+        static::$current_locale = static::get_default_locale($locale);
         static::$emulate_locales[static::$current_locale] = true;
       }
 
@@ -460,19 +460,29 @@ class T
   /**
    * Returns whether we are using our emulated gettext API (true) or the PHP built-in one (false).
    * @param null|bool $emulateLocale pass in a bool value to change the current value instead of just querying it.
-   *                                  Note that the library does its best to determine the correct value on its own,
-   *                                  you should normally not have to force this.
+   *                                 Note that the library does its best to determine the correct value on its own,
+   *                                 you should normally not have to force this.
    * @param null|string $locale
-   * @return bool|null
+   * @return bool
    */
   public static function locale_emulation($emulateLocale = null, $locale = null) {
+    if (!extension_loaded('gettext')) {
+      // we handle the rare case where the extension is not loaded, but someone else is providing the gettext family of
+      // functions
+      $functionsToEmulate = array('_', 'bind_textdomain_codeset', 'bindtextdomain', 'dcgettext', 'dcngettext', 'dgettext',
+        'dngettext', 'gettext', 'ngettext', 'textdomain');
+      return (count(array_intersect_key($functionsToEmulate, static::$emulated_functions)) == count($functionsToEmulate));
+    }
     if ($locale == '') {
-      $locale = static::_get_current_locale();
+      $locale = static::get_current_locale();
     }
     if ($emulateLocale !== null) {
       static::$emulate_locales[$locale] = (bool)$emulateLocale;
     }
-    return isset(static::$emulate_locales[$locale]) ? static::$emulate_locales[$locale] : null;
+    if (!isset(static::$emulate_locales[$locale])) {
+      static::$emulate_locales[$locale] = static::should_emulate_locale($locale);
+    }
+    return static::$emulate_locales[$locale];
   }
 
   /**
@@ -546,7 +556,7 @@ class T
    * @param bool $enable_cache
    * @return gettext_reader
    */
-  protected static function _get_reader($domain=null, $category=5, $enable_cache=true) {
+  protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
@@ -580,14 +590,17 @@ class T
    * @param string|false $function
    * @param string|null $locale to check a locale other than the current one
    * @return bool true means the locale/function is supported and needs no emulation
+   * @todo rename?
    */
-  protected static function _check_locale_and_function($function=false, $locale=null) {
+  protected static function check_locale_and_function($function=false, $locale=null) {
     if ($function and (isset(static::$emulated_functions[$function]) || !function_exists($function)))
       return false;
     if ($locale == '') {
-      $locale = static::_get_current_locale();
+      $locale = static::get_current_locale();
     }
-//// @todo move here the initialization of $emulate_locales[$locale]
+    if (!isset(static::$emulate_locales[$locale])) {
+      static::$emulate_locales[$locale] = static::should_emulate_locale($locale);
+    }
     return !static::$emulate_locales[$locale];
   }
 
@@ -596,7 +609,7 @@ class T
    * @param string|null $domain
    * @return string
    */
-  protected static function _get_codeset($domain=null) {
+  protected static function get_codeset($domain=null) {
     if (!isset($domain)) $domain = static::$default_domain;
     return isset(static::$text_domains[$domain]->codeset) ? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
@@ -613,8 +626,8 @@ class T
    * @todo move to a separate class?
    * @todo add charset conversion based on other php extensions/classes/methods: iconv, Uconverter, utf8_encode and co.
    */
-  protected static function _encode($text) {
-    $target_encoding = static::_get_codeset();
+  protected static function encode($text) {
+    $target_encoding = static::get_codeset();
     if (function_exists("mb_detect_encoding")) {
       $source_encoding = mb_detect_encoding($text);
       if ($source_encoding != $target_encoding)
@@ -631,7 +644,7 @@ class T
    *       https://www.gnu.org/software/gettext/manual/gettext.html#Locale-Environment-Variables-1
    * @todo rename?
    */
-  protected static function _get_default_locale($locale) {
+  protected static function get_default_locale($locale) {
     if ($locale == '')
       return getenv('LANG');
     else
@@ -642,7 +655,7 @@ class T
   /**
    * @return string|null
    */
-  protected static function _get_current_locale() {
+  protected static function get_current_locale() {
     if (static::$current_locale != '') {
       return static::$current_locale;
     }
@@ -654,6 +667,24 @@ class T
         return $locale;
       }
     }
-    return static::_get_default_locale('');
+    return static::get_default_locale('');
+  }
+
+  /**
+   * @param string $locale
+   * @return bool
+   */
+  protected static function should_emulate_locale($locale) {
+    if (!function_exists('setlocale') || isset(static::$emulated_functions['setlocale'])) {
+      return true;
+    }
+
+    $currentLocale = setlocale(5, 0);
+    if ($locale == $currentLocale) {
+      return false;
+    }
+    $ok = (setlocale(5, $locale) !== false);
+    setlocale(5, $currentLocale);
+    return $ok;
   }
 }

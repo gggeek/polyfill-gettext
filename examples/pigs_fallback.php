@@ -32,7 +32,7 @@ define('DEFAULT_LOCALE', setlocale(5, 0));
 
 use PGetText\T;
 
-$supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_CS', 'de_CH');
+$supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_RS', 'de_CH', 'esperanto');
 $encoding = 'UTF-8';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
@@ -53,7 +53,7 @@ header("Content-type: text/html; charset=$encoding");
 </head>
 <body>
 <h1>Polyfill-Gettext as a fallback solution</h1>
-<p>Example showing how to use Polyfill-Gettext as a fallback solution if the native gettext library is not available or the system does not support the requested locale.</p>
+<p>Example showing how to use Polyfill-Gettext as a fallback solution if either the native gettext library is not available or the system does not support the requested locale.</p>
 
 <?php
 

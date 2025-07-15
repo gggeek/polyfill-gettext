@@ -47,6 +47,10 @@ jobs:
                 # @todo add env setup scripts for windows
                 run: |
                   sudo --preserve-env=GITHUB_ACTIONS apt install gettext
+                  # locales used by the examples
+                  sudo locale-gen de_CH
+                  sudo locale-gen en_US
+                  sudo locale-gen sr_RS
 
             -   name: set up php
                 uses: shivammathur/setup-php@v2

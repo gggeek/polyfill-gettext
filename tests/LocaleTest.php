@@ -22,7 +22,6 @@ class LocaleTest extends PGetText_PolyfillTestCase
 
     $this->assertEquals($locale, T::setlocale(LC_MESSAGES, 0));
     $this->assertEquals('LC_MESSAGES=' . $locale, T::setlocale(LC_ALL, 0));
-
   }
 
   public function test_setlocale_system()

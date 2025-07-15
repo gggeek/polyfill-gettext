@@ -32,13 +32,15 @@ define('DEFAULT_LOCALE', setlocale(5, 0));
 
 use PGetText\T;
 
-$supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_CS', 'de_CH');
+$supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_RS', 'de_CH', 'esperanto');
 $encoding = 'UTF-8';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
 
 // gettext setup
-T::setlocale(LC_MESSAGES, $locale);
+// note: according to the php manual, you might need the `putenv` call as well as `setlocale`
+//putenv("LC_ALL=$locale");
+$setlocale_success = setlocale(LC_ALL, $locale);
 // Set the text domain as 'messages'
 $domain = 'messages';
 bindtextdomain($domain, LOCALE_DIR);
@@ -67,12 +69,22 @@ foreach($supported_locales as $l) {
 }
 print "</p>\n";
 
-if (T::locale_emulation()) {
-  print "<p>locale '" . htmlspecialchars($locale) . "' is _not_ supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
+if (extension_loaded('gettext')) {
+  if ($setlocale_success) {
+    print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system.</p>\n";
+  }
+  else {
+    print "<p>locale '" . htmlspecialchars($locale) . "' is _not_ supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
+  }
+} else {
+  if (T::locale_emulation()) {
+    print "<p>using polyfill-gettext to emulate the gettext API.</p>\n";
+  }
+  else {
+    print "<p>using an alternative gettext implementation.</p>\n";
+  }
 }
-else {
-  print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system, using native gettext implementation.</p>\n";
-}
+
 ?>
 
 <hr />

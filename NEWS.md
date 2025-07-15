@@ -9,6 +9,7 @@
   (see the table below for changes)
 * introduced Continuous Integration: tests are run on every Commit and Pull Request, on all supported PHP versions
 * fixed the charset conversion for when mbstring is enabled but no `mb_internal_encoding` is set
+* made it possible to use `setlocale()` instead of `_setlocale` or `T_setlocale` to init the locale
 
 #### Table of changed/removed classes, global functions and global variables
 
