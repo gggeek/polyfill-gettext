@@ -640,8 +640,9 @@ class T
    * Returns passed in $locale, or environment variable $LANG if $locale == ''.
    * @param string|null $locale if null or empty string, use LANG env var
    * @return string|false
-   * @todo check if we should support other env vars, as per
-   *       https://www.gnu.org/software/gettext/manual/gettext.html#Locale-Environment-Variables-1
+   * @todo we should most likely support other env vars, as per
+   *       https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
+   *       https://www.gnu.org/software/gettext/manual/html_node/The-LANGUAGE-variable.html
    * @todo rename?
    */
   protected static function get_default_locale($locale) {
