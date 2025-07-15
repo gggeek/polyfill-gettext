@@ -90,7 +90,7 @@ if (extension_loaded('gettext')) {
 <hr />
 
 <?php
-// using Polyfill-Gettext
+// using either Polyfill-Gettext or plain gettext
 print "<pre>";
 print _("This is how the story goes.\n\n");
 for ($number=6; $number>=0; $number--) {
@@ -100,6 +100,6 @@ print "</pre>\n";
 ?>
 
 <hr />
-<p>&laquo; <a href="./">back</a></p>
+<p>&laquo; <a href="./index.php">back</a></p>
 </body>
 </html>

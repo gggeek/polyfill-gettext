@@ -37,7 +37,7 @@ $encoding = 'UTF-8';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
 
-// gettext setup
+// polyfill-gettext setup
 T::setlocale(LC_MESSAGES, $locale);
 // Set the text domain as 'messages'
 $domain = 'messages';
@@ -54,7 +54,6 @@ header("Content-type: text/html; charset=$encoding");
 <body>
 <h1>Polyfill-Gettext as a fallback solution</h1>
 <p>Example showing how to use Polyfill-Gettext as a fallback solution if either the native gettext library is not available or the system does not support the requested locale.</p>
-
 <?php
 
 if (extension_loaded('gettext')) {
@@ -90,6 +89,6 @@ print "</pre>\n";
 ?>
 
 <hr />
-<p>&laquo; <a href="./">back</a></p>
+<p>&laquo; <a href="./index.php">back</a></p>
 </body>
 </html>
