@@ -71,17 +71,17 @@ print "</p>\n";
 
 if (extension_loaded('gettext')) {
   if ($setlocale_success) {
-    print "<p>locale '" . htmlspecialchars($locale) . "' is supported by your system.</p>\n";
+    print "<p>Locale '" . htmlspecialchars($locale) . "' is supported by your system.</p>\n";
   }
   else {
-    print "<p>locale '" . htmlspecialchars($locale) . "' is _not_ supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
+    print "<p>Locale '" . htmlspecialchars($locale) . "' is <strong>not</strong> supported on your system, using the default locale '". DEFAULT_LOCALE ."'.</p>\n";
   }
 } else {
   if (T::locale_emulation()) {
-    print "<p>using polyfill-gettext to emulate the gettext API.</p>\n";
+    print "<p>Using polyfill-gettext to emulate the gettext API.</p>\n";
   }
   else {
-    print "<p>using an alternative gettext implementation.</p>\n";
+    print "<p>Using an alternative gettext implementation.</p>\n";
   }
 }
 

@@ -78,10 +78,27 @@ Report them at https://github.com/gggeek/polyfill-gettext/issues
 
 Install the library using Composer, then be sure to require the Composer autoloader in your code.
 
-### Custom library usage
+### Standard gettext interface emulation
 
-Create one 'stream reader' (a class that provides functions
-`read()` and `seekto()`) which will
+Check the example in `examples/pigs_dropin.php`.
+
+Basically, you can use all the standard gettext interfaces as documented on:
+
+       https://www.php.net/gettext
+
+The only catch is that you can check the return value of `setlocale()` to see if your locale is system supported or not.
+
+### Usage as fallback for unsupported locales
+
+Check the example in `examples/pigs_fallback.php`.
+
+By using the functions provided by this library, your translations will be used via gettext emulation whenever
+the php gettext extension is not available or the desired locale is not installed in the system. If the php gettext
+extension is available, and the desired locale is not installed in the system, the native gettext function will be used.
+
+### Customi library usage
+
+Create one 'stream reader' (a class that provides functions `read()` and `seekto()`) which will
 provide data for the `gettext_reader`, with eg.
 
     $streamer = new FileStream('data.mo');
@@ -113,27 +130,17 @@ translation.
 
 I suggest creating simple aliases for these functions.
 
-### Standard gettext interface emulation
-
-Check example in `examples/pigs_dropin.php`, basically you can use all the standard gettext interfaces as
-documented on:
-
-       https://www.php.net/gettext
-
-The only catch is that you can check the return value of `setlocale()`
-to see if your locale is system supported or not.
-
 
 ## Examples
 
 See in the `examples/` subdirectory. There are a couple of files.
-pigs_dropin.php is an example, sr_CS/LC_MESSAGES/messages.po is a translation to Serbian
-language, and messages.mo is generated with
+`pigs_dropin.php` and `pigs_fallback.php` are example usages, `locale/xx_XX/LC_MESSAGES/messages.po` is a translation to
+each language, and `messages.mo` is the corresponding binary version, generated with
 
     msgfmt -o messages.mo messages.po
 
-There is also a simple `update.sh` script that can be used to generate
-POT file and to update the translation using `msgmerge`.
+There is also a simple `update.sh` script that can be used to generate the
+PO and MO files via calls to xgettext and msgfmt.
 
 ## TODO
 
