@@ -470,8 +470,9 @@ class T
     if (!extension_loaded('gettext')) {
       // we handle the rare case where the extension is not loaded, but someone else is providing the gettext family of
       // functions
-      $functionsToEmulate = array('_', 'bind_textdomain_codeset', 'bindtextdomain', 'dcgettext', 'dcngettext', 'dgettext',
-        'dngettext', 'gettext', 'ngettext', 'textdomain');
+      $functionsToEmulate = array('_' => true, 'bind_textdomain_codeset' => true, 'bindtextdomain' => true,
+        'dcgettext' => true, 'dcngettext' => true, 'dgettext' => true, 'dngettext' => true, 'gettext' => true,
+        'ngettext' => true, 'textdomain' => true);
       return (count(array_intersect_key($functionsToEmulate, static::$emulated_functions)) == count($functionsToEmulate));
     }
     if ($locale == '') {

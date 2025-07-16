@@ -72,7 +72,7 @@ foreach($supported_locales as $l) {
 print "</p>\n";
 
 if (T::locale_emulation()) {
-  print "<p>Locale '" . htmlspecialchars($locale) . "' is <strong>not</strong> supported on your system, using custom gettext implementation.</p>\n";
+  print "<p>Locale '" . htmlspecialchars($locale) . "' is <strong>not</strong> supported on your system, using poliyfill gettext implementation.</p>\n";
 }
 else {
   print "<p>Locale '" . htmlspecialchars($locale) . "' is supported by your system, using native gettext implementation.</p>\n";

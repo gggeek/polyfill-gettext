@@ -13,7 +13,7 @@ Evolved from the php-gettext codebase available at https://launchpad.net/php-get
 [![Build Status](https://github.com/gggeek/polyfill-gettext/actions/workflows/ci.yaml/badge.svg)](https://github.com/gggeek/polyfill-gettext/actions/workflows/ci.yaml)
 [![Code Coverage](https://codecov.io/gh/gggeek/polyfill-gettext/branch/master/graph/badge.svg)](https://app.codecov.io/gh/gggeek/phpxmlrpc)
 
-# Original Readme follows
+# Original Readme follows (now updated to take into account recent API changes)
 
 Copyright 2003, 2006, 2009 -- Danilo "angry with PHP[1]" Segan
 Licensed under GPLv2 (or any later version, see COPYING)
@@ -131,11 +131,10 @@ translation.
 
 I suggest creating simple aliases for these functions.
 
-
 ## Examples
 
 See in the `examples/` subdirectory. There are a couple of files.
-`pigs_dropin.php` and `pigs_fallback.php` are example usages, `locale/xx_XX/LC_MESSAGES/messages.po` is a translation to
+`pigs_dropin.php` and `pigs_fallback.php` are example usages, `locale/xx_XX/LC_MESSAGES/messages.po` is a translation for
 each language, and `messages.mo` is the corresponding binary version, generated with
 
     msgfmt -o messages.mo messages.po
