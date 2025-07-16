@@ -31,8 +31,8 @@ miserably, because either your hosting provider didn't support
 it, or the server didn't have adequate locale? Many times.
 
 Well, this is a solution to your needs. It allows using gettext
-tools for managing translations, yet it doesn't require gettext
-library at all. It parses generated MO files directly, and thus
+tools for managing translations, yet it doesn't require the gettext
+php extension at all. It parses generated MO files directly, and thus
 might be a bit slower than the (maybe provided) gettext library.
 
 Polyfill-Gettext is a simple reader for GNU gettext MO files. Those
@@ -51,24 +51,22 @@ disgusting language of PHP, because I'm often constrained to it.
 ## Features
 
 * Support for simple translations
-  Just define a simple alias for translate() function (suggested
-  use of `_()` or `gettext()`; see provided example).
 
 * Support for `ngettext` calls (plural forms, see a note under bugs)
   You may also use plural forms. Translations in MO files need to
   provide this, and they must also provide "plural-forms" header.
   Please see `info gettext` for more details.
 
-* Support for reading straight files, or strings (!!!)
+* Support for reading translations from straight files, or strings (!!!)
   Since I can imagine many different backends for reading in the MO
-  file data, I used imaginary abstract class `StreamReader` to do all
-  the input (check streams.php). For your convenience, I've already
-  provided two classes for reading files: `FileReader` and
+  file data, a class implementing `StreamReaderInterface` has to be provided to do all
+  the input. For your convenience, I've already
+  implemented two classes for reading files: `FileReader` and
   `StringReader` (`CachedFileReader` is a combination of the two: it
   loads entire file contents into a string, and then works on that).
-  See example below for usage. You can for instance use `StringReader`
+  See the example below for usage. You can for instance use `StringReader`
   when you read in data from a database, or you can create your own
-  derivative of StreamReader for anything you like.
+  implementation of StreamReaderInterface for anything you like.
 
 ## Bugs
 
@@ -87,18 +85,21 @@ Basically, you can use all the standard gettext interfaces as documented on:
        https://www.php.net/gettext
 
 The only catch is that you can check the return value of `setlocale()` to see if your locale is system supported or not.
+If it is not, and the native gettext extension is disabled, adding a call to `PgetText\T::setlocale()` will make
+translations work in any case. See the `pigs_dropin.php` example file for more details.
 
 ### Usage as fallback for unsupported locales
 
-Check the example in `examples/pigs_fallback.php`.
+Check the example file `examples/pigs_fallback.php`.
 
-By using the functions provided by this library, your translations will be used via gettext emulation whenever
-the php gettext extension is not available or the desired locale is not installed in the system. If the php gettext
-extension is available, and the desired locale is not installed in the system, the native gettext function will be used.
+By using the functions provided by this library instead of the gettext API, your translations will be used via gettext
+emulation whenever the php gettext extension is not available or the desired locale is not installed in the system.
+If the php gettext extension is available, and the desired locale is installed in the system, the native gettext function
+will be used transparently for maximum execution speed.
 
-### Customi library usage
+### Custom library usage
 
-Create one 'stream reader' (a class that provides functions `read()` and `seekto()`) which will
+Create one 'stream reader' (a class that implements `StreamReaderInterface`) which will
 provide data for the `gettext_reader`, with eg.
 
     $streamer = new FileStream('data.mo');

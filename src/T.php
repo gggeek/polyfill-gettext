@@ -588,9 +588,11 @@ class T
         }
       }
 
-      static::$text_domains[$domain]->l10n = new gettext_reader($input,
-        $enable_cache);
+      /// @todo save the class name in a static variable, so that users can easily change that and swap out
+      ///       gettext_reader with a custom implementation
+      static::$text_domains[$domain]->l10n = new gettext_reader($input, $enable_cache);
     }
+
     return static::$text_domains[$domain]->l10n;
   }
 
