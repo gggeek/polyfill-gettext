@@ -25,7 +25,7 @@ error_reporting(E_ALL | E_STRICT);
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
-// define constants
+// Define constants
 define('PROJECT_DIR', __DIR__);
 define('LOCALE_DIR', PROJECT_DIR .'/locale');
 define('DEFAULT_LOCALE', setlocale(LC_MESSAGES, 0));
@@ -40,8 +40,9 @@ $domain = 'messages';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
 
-// polyfill-gettext setup
-T::setlocale(LC_MESSAGES, $locale);
+// Polyfill-Gettext setup. This also sets up the locale for all other non-gettext localization-related methods
+T::setlocale(LC_ALL, $locale);
+
 // Set the text domain
 T::bindtextdomain($domain, LOCALE_DIR);
 T::bind_textdomain_codeset($domain, $encoding);
@@ -81,11 +82,11 @@ else {
 <hr />
 
 <?php
-// using Polyfill-Gettext
+// Using Polyfill-Gettext (which might be using native gettext under the hood if it is enabled and supports the current locale)
 print "<pre>";
 print T::_("This is how the story goes.\n\n");
 for ($number=6; $number>=0; $number--) {
-  printf(T::_ngettext("%d pig went to the market\n", "%d pigs went to the market\n", $number), $number);
+  printf(T::ngettext("%d pig went to the market\n", "%d pigs went to the market\n", $number), $number);
 }
 print "</pre>\n";
 ?>
