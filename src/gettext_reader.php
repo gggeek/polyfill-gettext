@@ -35,6 +35,8 @@ use PGetText\Streams\StreamReaderInterface;
  * While the cache is enabled by default, it can be switched off with the
  * second parameter in the constructor (e.g. when using very large MO files
  * that you don't want to keep in memory)
+ *
+ * @todo implement an interface
  */
 class gettext_reader {
   public $error = 0; // public variable that holds error code (0 if no error)
@@ -62,6 +64,7 @@ class gettext_reader {
   function __construct($Reader, $enable_cache = true) {
     // If there isn't a StreamReader, turn on short circuit mode.
     if (! $Reader || (isset($Reader->error) && $Reader->error != 0)) {
+      /// @todo raise a warning in case $Reader->error != 0 (here or in the Reader class?)
       $this->short_circuit = true;
       return;
     }
@@ -293,6 +296,7 @@ class gettext_reader {
           $res .= ') : (';
           break;
         case ';':
+          /// @todo avoid double semicolon at end of string
           $res .= str_repeat( ')', $p) . ';';
           $p = 0;
           break;
@@ -347,15 +351,23 @@ class gettext_reader {
    */
   public function select_string($n) {
     $string = $this->get_plural_forms();
-    $string = str_replace('nplurals',"\$total",$string);
-    $string = str_replace("n",(int)$n,$string);
-    $string = str_replace('plural',"\$plural",$string);
+    $string = str_replace('nplurals', "\$total", $string);
+    $string = str_replace("n", (int)$n, $string);
+    $string = str_replace('plural', "\$plural", $string);
 
     $total = 0;
     $plural = 0;
-
+    /// @todo should we wrap this in a try-catch block and transform any ParseError thrown into a more palatable
+    ///       error message?
     eval("$string");
-    if ($plural >= $total) $plural = $total - 1;
+
+    /// @todo raise a warning when $plural >= $total or $plural < 0
+    if ($plural >= $total) {
+      $plural = $total - 1;
+    } elseif ($plural < 0) {
+      $plural = 0;
+    }
+
     return $plural;
   }
 

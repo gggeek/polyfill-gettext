@@ -407,6 +407,7 @@ class T
    *        LC_ALL          6
    * @param string $locale
    * @return string|false
+   * @todo review the support for LC_ALL: does it make sense?
    */
   public static function setlocale($category, $locale) {
     if ($category != 6 && $category != 5) {
@@ -555,9 +556,21 @@ class T
    * @param int $category see the LC_ constants. 5 = LC_MESSAGES
    * @param bool $enable_cache
    * @return gettext_reader
+   * @todo if this method is called without _bindtextdomain having been called first, it will not find the
+   *       translation files, as it will not have the correct root path set. This does happen f.e. every time
+   *       a method such as _gettext is called from a non-emulation context, where T::bindtextdomain is called
+   *       instead. We could obviate that by forcing T::bindtextdomain and T::bind_textdomain_codeset to always
+   *       set $text_domains[$domain] - even if that means a minor slowdown, it is not expected to be called many
+   *       times per php script...
    */
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
+
+    if (!array_key_exists($domain, static::$text_domains)) {
+      // Initialize an empty domain object.
+      static::$text_domains[$domain] = new domain();
+    }
+
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
       $locale = static::setlocale(5, 0);
@@ -575,10 +588,6 @@ class T
         }
       }
 
-      if (!array_key_exists($domain, static::$text_domains)) {
-        // Initialize an empty domain object.
-        static::$text_domains[$domain] = new domain();
-      }
       static::$text_domains[$domain]->l10n = new gettext_reader($input,
         $enable_cache);
     }
