@@ -28,12 +28,15 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 // define constants
 define('PROJECT_DIR', __DIR__);
 define('LOCALE_DIR', PROJECT_DIR .'/locale');
-define('DEFAULT_LOCALE', setlocale(5, 0));
+define('DEFAULT_LOCALE', setlocale(LC_MESSAGES, 0));
 
 use PGetText\T;
 
+// 'esperanto' instead of its iso code 'eo' is not an error - we use it to showcase a locale which is never part of the
+// ones installed on the system
 $supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_RS', 'de_CH', 'esperanto');
 $encoding = 'UTF-8';
+$domain = 'messages';
 
 $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) ? $_GET['lang'] : DEFAULT_LOCALE;
 
@@ -41,8 +44,7 @@ $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) 
 // note: according to the php manual, you might need the `putenv` call as well as `setlocale`
 //putenv("LC_ALL=$locale");
 $setlocale_success = setlocale(LC_ALL, $locale);
-// Set the text domain as 'messages'
-$domain = 'messages';
+// Set the text domain
 bindtextdomain($domain, LOCALE_DIR);
 bind_textdomain_codeset($domain, $encoding);
 textdomain($domain);
@@ -81,7 +83,7 @@ if (extension_loaded('gettext')) {
     print "<p>Using polyfill-gettext to emulate the gettext API.</p>\n";
   }
   else {
-    print "<p>Using an alternative gettext implementation.</p>\n";
+    print "<p>Using an alternative gettext emulation.</p>\n";
   }
 }
 
