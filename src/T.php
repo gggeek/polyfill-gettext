@@ -40,11 +40,12 @@ class T
    */
   public static function _bind_textdomain_codeset($domain, $codeset = null) {
     /// @todo throw a ValueError if $domain == ''
+    static::initialize_domain_if_needed($domain);
     if ($codeset === null) {
       return static::$text_domains[$domain]->codeset;
     } else {
       /// @todo test: what to return?
-      /// @todo if mbstring is not enabled, return false
+      /// @todo if mbstring is not enabled, return false?
       static::$text_domains[$domain]->codeset = $codeset;
     }
   }
@@ -56,6 +57,7 @@ class T
    * @return string|false
    */
   public static function _bindtextdomain($domain, $directory = null) {
+    static::initialize_domain_if_needed($domain);
     // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
     if ($directory !== null) {
       if ($directory === '') {
@@ -67,10 +69,6 @@ class T
       } else {
         if ($directory[strlen($directory) - 1] != '/')
           $directory .= '/';
-      }
-      if (!array_key_exists($domain, static::$text_domains)) {
-        // Initialize an empty domain object.
-        static::$text_domains[$domain] = new domain();
       }
       static::$text_domains[$domain]->path = $directory;
     }
@@ -567,10 +565,7 @@ class T
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
 
-    if (!array_key_exists($domain, static::$text_domains)) {
-      // Initialize an empty domain object.
-      static::$text_domains[$domain] = new domain();
-    }
+    static::initialize_domain_if_needed($domain);
 
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
@@ -623,6 +618,7 @@ class T
    */
   protected static function get_codeset($domain=null) {
     if (!isset($domain)) $domain = static::$default_domain;
+    static::initialize_domain_if_needed($domain);
     return isset(static::$text_domains[$domain]->codeset) ? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (
         /// @todo should we default to this? Esp. for php 5.x? Or leave an empty string and handle it while transcoding
@@ -700,5 +696,13 @@ class T
     $ok = (setlocale(5, $locale) !== false);
     setlocale(5, $currentLocale);
     return $ok;
+  }
+
+  protected static function initialize_domain_if_needed($domain)
+  {
+    if (!array_key_exists($domain, static::$text_domains)) {
+      // Initialize an empty domain object.
+      static::$text_domains[$domain] = new domain();
+    }
   }
 }
