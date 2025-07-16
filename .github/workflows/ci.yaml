@@ -62,7 +62,7 @@ jobs:
                     coverage: ${{ matrix.code-coverage}}
 
             # Avoid downloading composer deps on every workflow run. Is this useful for us? Caching the installation of
-            # php/apache/privoxy/perl would be more useful...
+            # php/apache would be more useful...
             #-
             #    uses: actions/cache@v2
             #    with:
@@ -87,3 +87,6 @@ jobs:
                             echo "WARNING: code coverage not generated. Is xdebug disabled?"
                         fi
                     fi
+
+                    # now disable the php gettext extension, restart the webserver and run a 2nd set of tests
+                    # eg: `phpdismod gettext`
