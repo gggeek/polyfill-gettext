@@ -32,6 +32,17 @@ define('DEFAULT_LOCALE', setlocale(LC_MESSAGES, 0));
 
 use PGetText\T;
 
+// for unix-like systems, get the list of available locales using `locale -a`
+$installed_locales = array();
+exec('which locale', $output, $retcode);
+if ($retcode == 0) {
+  $output = array();
+  exec('locale -a', $output, $retcode);
+  if ($retcode == 0) {
+    $installed_locales = $output;
+  }
+}
+
 // 'esperanto' instead of its iso code 'eo' is not an error - we use it to showcase a locale which is never part of the
 // ones installed on the system
 $supported_locales = array(DEFAULT_LOCALE, 'en_US', 'sr_RS', 'de_CH', 'esperanto');
@@ -76,7 +87,15 @@ if (extension_loaded('gettext')) {
   print "<p>NB: The native gettext extension is not active on this PHP installation</p>\n";
 }
 
-print "<p>";
+if ($installed_locales) {
+  print "<p>Locales available on the system: ";
+  foreach($installed_locales as $i => $l) {
+    print htmlspecialchars($l) . (($i < count($installed_locales) -1) ? ', ' : '');
+  }
+  print "</p>\n";
+}
+
+print "<p>Test locales:";
 foreach($supported_locales as $l) {
 	print "[<a href=\"?lang=$l\">$l</a>] ";
 }
