@@ -41,12 +41,13 @@ class ParsingTest extends PGetText_PolyfillTestCase
       ));
   }
 
-  /**
-   * @todo refactor - move to `expectException()` ? or mark as skipped if msgfmt is not available
-   * was: at - expectedException ValueError
-   */
   public function test_select_string_disallows_nonint_numbers()
   {
+    exec('which msgfmt', $output, $retcode);
+    if ($retcode != 0) {
+      $this->markTestSkipped('Command msgfmt not found');
+    }
+
     $pofile_data = ''
       ."msgid \"\"\n"
       ."msgstr \"\"\n"
