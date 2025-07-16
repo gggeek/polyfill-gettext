@@ -272,6 +272,10 @@ class gettext_reader {
    */
   protected function sanitize_plural_expression($expr) {
     // Get rid of disallowed characters.
+    /// @todo log a warning if any forbidden chars are found
+    /// @todo make sure we allow no method calls or similar. In fact, the docs page at
+    ///       https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
+    ///       only has examples which only use the letter 'n'
     $expr = preg_replace('@[^a-zA-Z0-9_:;\(\)\?\|\&=!<>+*/\%-]@', '', $expr);
 
     // Add parenthesis for tertiary '?' operator.

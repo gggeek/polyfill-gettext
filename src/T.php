@@ -396,8 +396,8 @@ class T
   // *** Utility methods ***
 
   /**
-   * Sets a requested locale, if needed emulates it.
-   * @param int $category
+   * Sets a requested locale (or queries the currently set locale), if needed emulating it.
+   * @param int $category only LC_MESSAGES and LC_ALL are supported
    *        LC_CTYPE        0
    *        LC_NUMERIC      1
    *        LC_TIME         2
@@ -405,7 +405,7 @@ class T
    *        LC_MONETARY     4
    *        LC_MESSAGES     5
    *        LC_ALL          6
-   * @param string|null $locale
+   * @param string $locale
    * @return string|false
    */
   public static function setlocale($category, $locale) {
@@ -488,7 +488,7 @@ class T
   /**
    * Notify the T class that it is used to emulate a given native php function
    * @param string $function
-   * @param null|bool $doEmulate
+   * @param null|bool $doEmulate if null is passed in, the current value is returned unchanged
    * @return bool|null
    */
   public static function emulate_function($function, $doEmulate = true)
@@ -654,7 +654,8 @@ class T
 
 
   /**
-   * @return string|null
+   * NB: end-user code should not call this but T::setlocale(5/6, 0) instead.
+   * @return string|false
    */
   protected static function get_current_locale() {
     if (static::$current_locale != '') {
