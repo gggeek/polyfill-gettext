@@ -42,7 +42,7 @@ class ParsingTest extends PGetText_PolyfillTestCase
   }
 
   /**
-   * @todo refactor - move to `expectException()`
+   * @todo refactor - move to `expectException()` ? or mark as skipped if msgfmt is not available
    * was: at - expectedException ValueError
    */
   public function test_select_string_disallows_nonint_numbers()
