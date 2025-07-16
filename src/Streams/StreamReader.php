@@ -6,7 +6,7 @@ namespace PGetText\Streams;
  * Simple class to wrap file streams, string streams, etc.
  * Seek is essential, and it should be byte stream
  *
- * @todo implement - this seems broken atm
+ * @todo implement - this seems broken atm (it was most likely created as abstract base class)
  */
 class StreamReader implements StreamReaderInterface
 {

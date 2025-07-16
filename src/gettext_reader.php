@@ -358,7 +358,7 @@ class gettext_reader {
     $total = 0;
     $plural = 0;
     /// @todo should we wrap this in a try-catch block and transform any ParseError thrown into a more palatable
-    ///       error message?
+    ///       error message? Test what happens in the non-emulated case for "weird" pluralification rules
     eval("$string");
 
     /// @todo raise a warning when $plural >= $total or $plural < 0
