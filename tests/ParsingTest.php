@@ -2,10 +2,10 @@
 
 include_once __DIR__ . '/PolyfillTestCase.php';
 
-use PGetText\gettext_reader;
-use PGetText\Streams\CachedFileReader;
+use PGettext\gettext_reader;
+use PGettext\Streams\CachedFileReader;
 
-class ParsingTest extends PGetText_PolyfillTestCase
+class ParsingTest extends PGettext_PolyfillTestCase
 {
   public function test_extract_plural_forms_header_from_po_header()
   {

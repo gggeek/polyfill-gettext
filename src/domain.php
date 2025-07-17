@@ -1,6 +1,6 @@
 <?php
 
-namespace PGetText;
+namespace PGettext;
 
 class domain
 {

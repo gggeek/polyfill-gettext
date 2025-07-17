@@ -1,6 +1,6 @@
 <?php
 
-namespace PGetText\Streams;
+namespace PGettext\Streams;
 
 class FileReader implements StreamReaderInterface
 {

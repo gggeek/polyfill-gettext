@@ -30,7 +30,7 @@ define('PROJECT_DIR', __DIR__);
 define('LOCALE_DIR', PROJECT_DIR .'/locale');
 define('DEFAULT_LOCALE', setlocale(LC_MESSAGES, 0));
 
-use PGetText\T;
+use PGettext\T;
 
 // for unix-like systems, get the list of available locales using `locale -a`
 $installed_locales = array();

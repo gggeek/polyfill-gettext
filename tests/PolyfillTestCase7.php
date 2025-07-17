@@ -3,7 +3,7 @@
 use Yoast\PHPUnitPolyfills\TestCases\TestCase;
 
 // allow hooking code to run within `run` and `fail` via defining `_run` and `_fail` in subclasses
-abstract class PGetText_PolyfillTestCase extends TestCase
+abstract class PGettext_PolyfillTestCase extends TestCase
 {
     public function _run($result = null) {
         return parent::run($result);

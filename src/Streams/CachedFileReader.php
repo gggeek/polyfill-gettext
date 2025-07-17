@@ -1,6 +1,6 @@
 <?php
 
-namespace PGetText\Streams;
+namespace PGettext\Streams;
 
 /**
  * Preloads entire file in memory first, then creates a StringReader

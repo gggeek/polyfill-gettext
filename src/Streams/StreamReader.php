@@ -1,6 +1,6 @@
 <?php
 
-namespace PGetText\Streams;
+namespace PGettext\Streams;
 
 /**
  * Simple class to wrap file streams, string streams, etc.

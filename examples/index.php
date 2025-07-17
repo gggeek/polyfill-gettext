@@ -6,7 +6,7 @@
 <h1>Polyfill-Gettext</h1>
 
 <h2>Introduction</h2>
-<p>Polyfill-gettext provides a simple gettext replacement that works independently from the system's gettext abilities.
+<p>Polyfill-Gettext provides a simple gettext replacement that works independently from the system's gettext abilities.
 It can read MO files and use them for translating strings.</p>
 <p>This version has the ability to cache all strings and translations to speed up the string lookup.
 While the cache is enabled by default, it can be switched off with the second parameter in the constructor (e.g. when using very large MO files

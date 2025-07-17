@@ -20,9 +20,9 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-namespace PGetText;
+namespace PGettext;
 
-use PGetText\Streams\StreamReaderInterface;
+use PGettext\Streams\StreamReaderInterface;
 
 /**
  * Provides a simple gettext replacement that works independently from

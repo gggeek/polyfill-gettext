@@ -1,8 +1,8 @@
 <?php
 
-namespace PGetText;
+namespace PGettext;
 
-use PGetText\Streams\FileReader;
+use PGettext\Streams\FileReader;
 
 class T
 {

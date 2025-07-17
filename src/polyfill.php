@@ -23,7 +23,7 @@
 
 */
 
-use PGetText\T;
+use PGettext\T;
 
 // LC_MESSAGES is not available if php has not been compiled with libintl,
 // while the other constants are always available.

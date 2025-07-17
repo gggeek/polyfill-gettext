@@ -6,7 +6,7 @@
 >
 
   <testsuites>
-    <testsuite name="Polyfill-GetText Test Suite">
+    <testsuite name="Polyfill-Gettext Test Suite">
       <directory>./tests</directory>
     </testsuite>
   </testsuites>

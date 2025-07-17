@@ -2,9 +2,9 @@
 
 include_once __DIR__ . '/PolyfillTestCase.php';
 
-use PGetText\T;
+use PGettext\T;
 
-class LocaleTest extends PGetText_PolyfillTestCase
+class LocaleTest extends PGettext_PolyfillTestCase
 {
   public function test_setlocale_by_env_var()
   {

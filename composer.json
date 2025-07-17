@@ -39,7 +39,7 @@
   },
   "autoload": {
     "psr-4": {
-      "PGetText\\": "src/"
+      "PGettext\\": "src/"
     },
     "files": ["src/polyfill.php"]
   }

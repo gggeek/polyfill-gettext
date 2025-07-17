@@ -30,7 +30,7 @@ define('PROJECT_DIR', __DIR__);
 define('LOCALE_DIR', PROJECT_DIR .'/locale');
 define('DEFAULT_LOCALE', setlocale(LC_MESSAGES, 0));
 
-use PGetText\T;
+use PGettext\T;
 
 // for unix-like systems, get the list of available locales using `locale -a`
 $installed_locales = array();
@@ -56,14 +56,14 @@ $locale = (isset($_GET['lang']) && in_array($_GET['lang'], $supported_locales)) 
 //putenv("LC_ALL=$locale");
 $setlocale_success = setlocale(LC_ALL, $locale);
 
-if (!$setlocale_success && class_exists('\PGetText\T')) {
+if (!$setlocale_success && class_exists('\PGettext\T')) {
   // This 'fallback' call has only effect in case that 1. the php gettext extension is not enabled, and 2. the desired
   // locale is not installed in the system. In such scenario, the string translation via `_()` and other gettext methods
   // will still work, but other localization-related methods will not.
   // Note that, if the php gettext extension _is_ enabled and the desired locale is not installed in the system, there
   // is no way for Polyfill-Gettext to override functions `_()` and co., and it won't thus be able to make the
   // translations work. In order to achieve that, see how the code in file `pigs_fallback.php` does it.
-  PGetText\T::setlocale(LC_MESSAGES, $locale);
+  PGettext\T::setlocale(LC_MESSAGES, $locale);
 }
 
 // Set the text domain
