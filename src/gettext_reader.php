@@ -22,6 +22,7 @@
 
 namespace PGettext;
 
+use PGettext\Plurals\Header as PluralHeader;
 use PGettext\Streams\StreamReaderInterface;
 
 /**
@@ -269,45 +270,6 @@ class gettext_reader {
   }
 
   /**
-   * Sanitize plural form expression for use in PHP eval call.
-   *
-   * @return string $expr sanitized plural form expression
-   */
-  protected function sanitize_plural_expression($expr) {
-    // Get rid of disallowed characters.
-    /// @todo log a warning if any forbidden chars are found
-    /// @todo make sure we allow no method calls or similar. In fact, the docs page at
-    ///       https://www.gnu.org/software/gettext/manual/html_node/Plural-forms.html
-    ///       only has examples which only use the letter 'n'
-    $expr = preg_replace('@[^a-zA-Z0-9_:;\(\)\?\|\&=!<>+*/\%-]@', '', $expr);
-
-    // Add parenthesis for tertiary '?' operator.
-    $expr .= ';';
-    $res = '';
-    $p = 0;
-    for ($i = 0; $i < strlen($expr); $i++) {
-      $ch = $expr[$i];
-      switch ($ch) {
-        case '?':
-          $res .= ' ? (';
-          $p++;
-          break;
-        case ':':
-          $res .= ') : (';
-          break;
-        case ';':
-          /// @todo avoid double semicolon at end of string
-          $res .= str_repeat( ')', $p) . ';';
-          $p = 0;
-          break;
-        default:
-          $res .= $ch;
-      }
-    }
-    return $res;
-  }
-
-  /**
    * Parse full PO header and extract only plural forms line.
    *
    * @return string verbatim plural form header field
@@ -323,7 +285,7 @@ class gettext_reader {
   /**
    * Get possible plural forms from MO header
    *
-   * @return string plural form header
+   * @return PluralHeader plural form header object
    */
   protected function get_plural_forms() {
     // let's assume message number 0 is header
@@ -331,14 +293,14 @@ class gettext_reader {
     $this->load_tables();
 
     // cache header field for plural forms
-    if (! is_string($this->pluralheader)) {
+    if ($this->pluralheader == null) {
       if ($this->enable_cache) {
         $header = $this->cache_translations[""];
       } else {
         $header = $this->get_translation_string(0);
       }
       $expr = $this->extract_plural_forms_header_from_po_header($header);
-      $this->pluralheader = $this->sanitize_plural_expression($expr);
+      $this->pluralheader = new PluralHeader($expr);
     }
     return $this->pluralheader;
   }
@@ -350,20 +312,12 @@ class gettext_reader {
    * @return int array index of the right plural form
    */
   public function select_string($n) {
-    $string = $this->get_plural_forms();
-    $string = str_replace('nplurals', "\$total", $string);
-    $string = str_replace("n", (int)$n, $string);
-    $string = str_replace('plural', "\$plural", $string);
-
-    $total = 0;
-    $plural = 0;
-    /// @todo should we wrap this in a try-catch block and transform any ParseError thrown into a more palatable
-    ///       error message? Test what happens in the non-emulated case for "weird" pluralification rules
-    eval("$string");
+    $plural_header = $this->get_plural_forms();
+    $plural = $plural_header->expression->evaluate($n);
 
     /// @todo raise a warning when $plural >= $total or $plural < 0
-    if ($plural >= $total) {
-      $plural = $total - 1;
+    if ($plural >= $plural_header->total) {
+      $plural = $plural_header->total - 1;
     } elseif ($plural < 0) {
       $plural = 0;
     }
