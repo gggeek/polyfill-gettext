@@ -1,4 +1,4 @@
-### Release 2.0, 2026-xx-yy (unreleased yet)
+### Release 2.0.0-beta1, 2025-7-20
 
 * moved the code from bazaar on https://launchpad.net/php-gettext to git at GitHub
 * added Composer package definition
