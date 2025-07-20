@@ -4,8 +4,6 @@ A pure-php implementation of the API provided by the [PHP gettext extension](htt
 
 Evolved from the php-gettext codebase available at https://launchpad.net/php-gettext.
 
-# *** WIP ***
-
 [![License](https://poser.pugx.org/gggeek/polyfill-gettext/license)](https://packagist.org/packages/gggeek/polyfill-gettext)
 [![Latest Stable Version](https://poser.pugx.org/gggeek/polyfill-gettext/v/stable)](https://packagist.org/packages/gggeek/polyfill-gettext)
 [![Total Downloads](https://poser.pugx.org/gggeek/polyfill-gettext/downloads)](https://packagist.org/packages/gggeek/polyfill-gettext)
@@ -144,11 +142,16 @@ PO and MO files via calls to xgettext and msgfmt.
 
 ## TODO
 
+* support other means than using mbstring of converting between character sets
+
+* expand the test suite and improve the emulation of the native gettext API to cover errors, returned values, support
+  for all environment variables, etc...
+
 * Improve speed to be even more comparable to the native gettext
-implementation.
+  implementation.
 
 * Try to use hash tables in MO files: with pre-loading, would it
-be useful at all?
+  be useful at all?
 
 ## Never-asked-questions
 
@@ -184,3 +187,20 @@ be useful at all?
   freedoms you could take away. ;-)
 
   Uhm, whatever.
+
+* Why yet another reimplementation of the gettext API?
+
+  Because at the time I was looking for one, I did not find any that fit the bill.
+
+  The original php-gettext package has not seen any commit or release since 2015.
+
+  On github, there is https://github.com/smmoosavi/php-gettext, but it does not attempt to be a transparent drop-in.
+
+  Same goes for all the packages which can be found on Packagist while searching for 'gettext', such as
+  https://github.com/php-gettext/Gettext.
+
+  After starting this, in July 2025, I found out the https://github.com/phpmyadmin/motranslator project, which does in
+  fact stay close to the original php-gettext functionality, and might be a good candidate to use instead of this library.
+  The main differences, as far as I can tell from a cursory analysis, are: it does require php 8.2, and symfony/expression-language,
+  while we are self-contained and require php 5.3 or later, and it does not automatically reimplement the php gettext
+  api when the extension is not loaded, registering instead the same functions prefixed with `_`.
