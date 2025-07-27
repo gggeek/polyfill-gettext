@@ -311,9 +311,13 @@ class PluralsTest extends PGettext_PolyfillTestCase
   }
 
   /**
+   * @todo make this test pass with php 5.4,5.5 and the corresponding version of phpunit/polyfill
    * @dataProvider syntax_provider
    */
   function test_syntax($expression_string, $expected_output) {
+    if (version_compare(phpversion(), '5.6.0', '<')) {
+      $this->markTestSkipped('Skipping test on old php versions because of issues with PHPUnit expectExceptionMessage');
+    }
     $this->expectExceptionMessage($expected_output);
     $parser = new PGettext\Plurals\Parser($expression_string);
     $parser->parse();
