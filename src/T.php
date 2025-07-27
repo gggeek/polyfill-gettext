@@ -63,18 +63,24 @@ class T
     if (static::initialize_domain_if_needed($domain) < 0) {
       return false;
     }
-    // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
     if ($directory !== null) {
       if ($directory === '') {
         $directory = getcwd();
-      }
-      if (substr(php_uname(), 0, 7) == "Windows") {
-        if ($directory[strlen($directory) - 1] != '\\' and $directory[strlen($directory) - 1] != '/')
-          $directory .= '\\';
       } else {
-        if ($directory[strlen($directory) - 1] != '/')
-          $directory .= '/';
+        $directory = (string)$directory;
       }
+      // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
+      /*if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+        if ($directory[strlen($directory) - 1] != '\\' and $directory[strlen($directory) - 1] != '/')
+          $directory .= DIRECTORY_SEPARATOR;
+      } else {
+        if ($directory[strlen($directory) - 1] != DIRECTORY_SEPARATOR)
+          $directory .= DIRECTORY_SEPARATOR;
+      }*/
+      if (! is_dir($directory)) {
+        return false;
+      }
+      $directory = realpath($directory);
       static::$text_domains[$domain]->path = $directory;
     }
     return static::$text_domains[$domain]->path;
@@ -576,7 +582,7 @@ class T
 
     $initialized = static::initialize_domain_if_needed($domain);
     if ($initialized < 0) {
-      /// @todo throw
+/// @todo throw
     }
     if ($initialized) {
       /// @todo unless we are emulating the API, initialize the domain path and codeset from the native php extension
@@ -585,14 +591,13 @@ class T
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
       $locale = static::setlocale(5, 0);
-      $bound_path = isset(static::$text_domains[$domain]->path) ?
-        static::$text_domains[$domain]->path : './';
+      $bound_path = isset(static::$text_domains[$domain]->path) ? static::$text_domains[$domain]->path : '.';
       $subpath = static::$LC_CATEGORIES[$category] ."/$domain.mo";
 
       $locale_names = static::get_list_of_locales($locale);
       $input = null;
       foreach ($locale_names as $locale) {
-        $full_path = $bound_path . $locale . "/" . $subpath;
+        $full_path = $bound_path . '/' . $locale . '/' . $subpath;
         if (file_exists($full_path)) {
           $input = new FileReader($full_path);
           break;

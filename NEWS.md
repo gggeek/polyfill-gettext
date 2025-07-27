@@ -5,6 +5,7 @@
 * fixed calling `T::setlocale` with multiple locale arguments
 * improved return values of `T::bind_textdomain_codeset`
 * improved handling of unexpected arg type in `T::bind_textdomain_codeset` and `T::bindtextdomain`
+* improved handling of unexpected arg values in `T::textdomain`
 
 
 ### Release 2.0.0-beta1, 2025-7-20
