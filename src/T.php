@@ -39,15 +39,18 @@ class T
    * @return string|false
    */
   public static function _bind_textdomain_codeset($domain, $codeset = null) {
+    if ($domain == '') {
+      return false;
+    }
     /// @todo throw a ValueError if $domain == ''
-    static::initialize_domain_if_needed($domain);
-    if ($codeset === null) {
-      return static::$text_domains[$domain]->codeset;
-    } else {
-      /// @todo test: what to return?
+    if (static::initialize_domain_if_needed($domain) < 0) {
+      return false;
+    }
+    if ($codeset !== null) {
       /// @todo if mbstring is not enabled, return false?
       static::$text_domains[$domain]->codeset = $codeset;
     }
+    return static::$text_domains[$domain]->codeset;
   }
 
   /**
@@ -57,7 +60,9 @@ class T
    * @return string|false
    */
   public static function _bindtextdomain($domain, $directory = null) {
-    static::initialize_domain_if_needed($domain);
+    if (static::initialize_domain_if_needed($domain) < 0) {
+      return false;
+    }
     // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
     if ($directory !== null) {
       if ($directory === '') {
@@ -569,7 +574,11 @@ class T
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
 
-    if (static::initialize_domain_if_needed($domain)) {
+    $initialized = static::initialize_domain_if_needed($domain);
+    if ($initialized < 0) {
+      /// @todo throw
+    }
+    if ($initialized) {
       /// @todo unless we are emulating the API, initialize the domain path and codeset from the native php extension
     }
 
@@ -710,15 +719,18 @@ class T
 
   /**
    * @param string $domain
-   * @return bool true when the domain is created on the fly
+   * @return int 1 when the domain is created on the fly, 0 if it existed, < 0 on failure
    */
   protected static function initialize_domain_if_needed($domain)
   {
+    if (is_object($domain) || is_array($domain) || is_resource($domain)) {
+      return -1;
+    }
     if (!array_key_exists($domain, static::$text_domains)) {
       // Initialize an empty domain object.
       static::$text_domains[$domain] = new domain();
-      return true;
+      return 1;
     }
-    return false;
+    return 0;
   }
 }
