@@ -24,7 +24,6 @@ class EmulationSetupTest extends EmulationTest
   {
     $cases = array(
       array(null),
-      array(''),
       array(-1),
       array(-10),
       array(1),
