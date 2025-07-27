@@ -22,13 +22,11 @@ class EmulationSetupTest extends EmulationTest
 
   public function textdomain_provider()
   {
-    return array(
+    $cases = array(
       array(null),
       array(''),
       array(-1),
       array(-10),
-      array(0),
-      array('0'),
       array(1),
       array(10),
       /// @todo fix these cases - raise + expect an error
@@ -37,6 +35,13 @@ class EmulationSetupTest extends EmulationTest
       array('messages'),
       array('!"£$%^&*()_+-=[]{};\'#,./<>?\\|`¬'),
     );
+    if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+      /// @todo php 8.4 raises a valueError for these - reintroduce them plus set an error expectation
+      $cases[] = array('');
+      $cases[] = array(0);
+      $cases[] = array('0');
+    }
+    return $cases;
   }
 
   /**
