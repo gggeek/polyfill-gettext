@@ -64,22 +64,17 @@ class T
       return false;
     }
 
-/// @todo if $directory is null, 0 or '', do not set the dir
+    // "An empty string means the current directory"
+    if ($directory === '') {
+      $directory = getcwd();
+    }
 
-    if (!$directory !== null) {
-      if ($directory === '') {
-        $directory = getcwd();
-      } else {
-        $directory = (string)$directory;
-      }
-      // ensure $directory ends with a slash ('/' should work for both, but let's still play nice)
-      /*if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        if ($directory[strlen($directory) - 1] != '\\' and $directory[strlen($directory) - 1] != '/')
-          $directory .= DIRECTORY_SEPARATOR;
-      } else {
-        if ($directory[strlen($directory) - 1] != DIRECTORY_SEPARATOR)
-          $directory .= DIRECTORY_SEPARATOR;
-      }*/
+    // if $directory is null (or 0), do not set the dir
+    if ($directory != null) {
+      $directory = (string)$directory;
+
+      // here was: "ensure $directory ends with a slash ('/' should work for both, but let's still play nice)"
+
       if (! is_dir($directory)) {
         return false;
       }
@@ -466,6 +461,7 @@ class T
       }
 
       // Allow locale to be changed on the go for one translation domain.
+      /// @todo review - is this necessary / correct?
       if (array_key_exists(static::$default_domain, static::$text_domains)) {
         unset(static::$text_domains[static::$default_domain]->l10n);
       }
