@@ -93,7 +93,7 @@ class LocaleTest extends PGettext_PolyfillTestCase
     $this->assertEquals('LC_MESSAGES=' . $locale, T::setlocale(LC_ALL, 0));
     // nb: setlocale is available even when the gettext extension is disabled
     $this->assertEquals($locale, setlocale(5, 0));
-    $this->assertEquals(true, T::locale_emulation());
+    $this->assertEquals(!extension_loaded('gettext'), T::locale_emulation());
   }
 
   public function test_setlocale_wrong_category()
