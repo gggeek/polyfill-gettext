@@ -109,8 +109,6 @@ class EmulationSetupTest extends EmulationTest
   public function bind_textdomain_codeset_provider()
   {
     $textDomains = array(
-      null,
-      '',
       -1,
       0,
       1,
@@ -120,6 +118,11 @@ class EmulationSetupTest extends EmulationTest
       'xxx-XXX',
       'C'
     );
+    if (version_compare(PHP_VERSION, '8.4.0', '<')) {
+      /// @todo php 8.4 raises a valueError for these - reintroduce them plus set an error expectation
+      $textDomains[] = null;
+      $textDomains[] = '';
+    }
     $codesets = array(
       null,
       '',

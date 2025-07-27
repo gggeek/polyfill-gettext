@@ -39,7 +39,8 @@ class T
    * @return string|false
    */
   public static function _bind_textdomain_codeset($domain, $codeset = null) {
-    if ($domain == '') {
+    // using 0 works for php version up to 7.4
+    if ($domain == '' && ($domain !== 0 || version_compare(PHP_VERSION, '8.0.0', '>='))) {
       return false;
     }
     /// @todo throw a ValueError if $domain == ''
