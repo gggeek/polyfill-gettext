@@ -1,15 +1,15 @@
 <?php
 
 include_once __DIR__ . '/PolyfillTestCase.php';
+include_once __DIR__ . '/testable_gettext_reader.php';
 
-use PGettext\gettext_reader;
 use PGettext\Streams\CachedFileReader;
 
 class ParsingTest extends PGettext_PolyfillTestCase
 {
   public function test_extract_plural_forms_header_from_po_header()
   {
-    $parser = new gettext_reader(null);
+    $parser = new testable_gettext_reader(null);
     // It defaults to a "Western-style" plural header.
     $this->assertEquals(
       'nplurals=2; plural=n == 1 ? 0 : 1;',
@@ -60,12 +60,13 @@ class ParsingTest extends PGettext_PolyfillTestCase
 
     $modata = new CachedFileReader($mofile);
     unlink($mofile);
-    $parser = new gettext_reader($modata);
+    $parser = new testable_gettext_reader($modata);
     // It defaults to a "Western-style" plural header.
     $this->assertEquals(
       'nplurals=2; plural=n == 1 ? 0 : 1;',
       $parser->extract_plural_forms_header_from_po_header(""));
 
+    /// @todo move this test to PluralsTest, rename to 'test_plurals_injection'. Also, do not test directly select_string
     $new_tempfile = tempnam(sys_get_temp_dir(), "pg");
     $parser->select_string(
       "(file_put_contents('$new_tempfile', 'boom'))");
@@ -78,7 +79,7 @@ class ParsingTest extends PGettext_PolyfillTestCase
    * @dataProvider data_provider_test_npgettext
    */
   public function test_npgettext($number, $expected) {
-    $parser = new gettext_reader(null);
+    $parser = new testable_gettext_reader(null);
     $result = $parser->npgettext("context",
                                  "%d pig went to the market\n",
                                  "%d pigs went to the market\n",
