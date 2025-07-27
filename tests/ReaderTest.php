@@ -5,7 +5,7 @@ include_once __DIR__ . '/testable_gettext_reader.php';
 
 use PGettext\Streams\CachedFileReader;
 
-class ParsingTest extends PGettext_PolyfillTestCase
+class ReaderTest extends PGettext_PolyfillTestCase
 {
   public function test_extract_plural_forms_header_from_po_header()
   {
@@ -66,7 +66,6 @@ class ParsingTest extends PGettext_PolyfillTestCase
       'nplurals=2; plural=n == 1 ? 0 : 1;',
       $parser->extract_plural_forms_header_from_po_header(""));
 
-    /// @todo move this test to PluralsTest, rename to 'test_plurals_injection'. Also, do not test directly select_string
     $new_tempfile = tempnam(sys_get_temp_dir(), "pg");
     $parser->select_string(
       "(file_put_contents('$new_tempfile', 'boom'))");
@@ -91,6 +90,8 @@ class ParsingTest extends PGettext_PolyfillTestCase
     return array(
       array(1, "%d pig went to the market\n"),
       array(2, "%d pigs went to the market\n"),
+      array(0, "%d pigs went to the market\n"),
+      array(-1, "%d pigs went to the market\n"),
     );
   }
 }

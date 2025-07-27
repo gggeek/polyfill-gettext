@@ -72,7 +72,7 @@ copyright holder.
 
 include_once __DIR__ . '/PolyfillTestCase.php';
 
-class PluralsTest extends PGettext_PolyfillTestCase
+class PluralsParserTest extends PGettext_PolyfillTestCase
 {
   public function evaluations_provider() {
     return array(
