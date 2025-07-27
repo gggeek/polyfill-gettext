@@ -315,7 +315,8 @@ class PluralsParserTest extends PGettext_PolyfillTestCase
    * @dataProvider syntax_provider
    */
   function test_syntax($expression_string, $expected_output) {
-    if (version_compare(phpversion(), '5.6.0', '<')) {
+    //if (version_compare(phpversion(), '5.6.0', '<')) {
+    if (! is_callable(array($this, 'expectExceptionMessage'))) {
       $this->markTestSkipped('Skipping test on old php versions because of issues with PHPUnit expectExceptionMessage');
     }
     $this->expectExceptionMessage($expected_output);
