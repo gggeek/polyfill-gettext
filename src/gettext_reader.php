@@ -36,8 +36,6 @@ use PGettext\Streams\StreamReaderInterface;
  * While the cache is enabled by default, it can be switched off with the
  * second parameter in the constructor (e.g. when using very large MO files
  * that you don't want to keep in memory)
- *
- * @todo implement an interface
  */
 class gettext_reader implements ReaderInterface {
   public $error = 0; // public variable that holds error code (0 if no error)

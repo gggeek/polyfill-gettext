@@ -7,7 +7,7 @@ use PGettext\Streams\FileReader;
 class T
 {
   protected static $text_domains = array();
-  protected static $default_domain = 'messages';
+  protected static $current_domain = 'messages';
   /**
    * The keys are locale names
    * @var bool[]
@@ -48,7 +48,7 @@ class T
       return false;
     }
     if ($codeset !== null) {
-      /// @todo if mbstring is not enabled, return false?
+      /// @todo if mbstring and its alternatives are not available, return false?
       static::$text_domains[$domain]->codeset = $codeset;
     }
     return static::$text_domains[$domain]->codeset;
@@ -71,7 +71,7 @@ class T
     }
 
     // if $directory is null (or 0), do not set the dir
-    if ($directory != null) {
+    if ($directory != null && $directory !== '0') {
       $directory = (string)$directory;
 
       // here was: "ensure $directory ends with a slash ('/' should work for both, but let's still play nice)"
@@ -166,10 +166,10 @@ class T
    */
   public static function _textdomain($domain = null) {
     /// @todo throw a ValueError if $domain === ''
-    if ($domain !== null) {
-      static::$default_domain = $domain;
+    if ($domain != null && $domain !== '0') {
+      static::$current_domain = $domain;
     }
-    return static::$default_domain;
+    return static::$current_domain;
   }
 
   // *** 'context' gettext calls ***
@@ -415,7 +415,6 @@ class T
    *        LC_ALL          6
    * @param string $locale
    * @return string|false
-   * @todo review the support for LC_ALL: does it make sense?
    */
   public static function setlocale($category, $locale) {
     if ($category != 6 && $category != 5) {
@@ -428,13 +427,6 @@ class T
     if ($locale === 0 || $locale === '0') {
       $locale = static::get_current_locale();
       return $category == 6 ? "LC_MESSAGES=" . $locale : $locale;
-      /*if (static::$current_locale != '')
-        return $category == 6 ? "LC_MESSAGES=" . static::$current_locale : static::$current_locale;
-      else
-        // obey LANG variable, maybe extend to support all of LC_* vars
-        // even if we tried to read locale without setting it first
-        /// @todo make sure we avoid loops - $current_locale should never be 0 or '0'
-        return static::get_current_locale($category, static::$current_locale);*/
     } else {
       // we make sure the `setlocale` function is not the polyfill one, to avoid loops!
       if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
@@ -463,8 +455,8 @@ class T
 
       // Allow locale to be changed on the go for one translation domain.
       /// @todo review - is this necessary / correct?
-      if (array_key_exists(static::$default_domain, static::$text_domains)) {
-        unset(static::$text_domains[static::$default_domain]->l10n);
+      if (array_key_exists(static::$current_domain, static::$text_domains)) {
+        unset(static::$text_domains[static::$current_domain]->l10n);
       }
 
       return static::$current_locale;
@@ -572,7 +564,7 @@ class T
    * @return gettext_reader
    */
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
-    if (!isset($domain)) $domain = static::$default_domain;
+    if (!isset($domain)) $domain = static::$current_domain;
 
     $initialized = static::initialize_domain_if_needed($domain);
     if ($initialized < 0) {
@@ -629,7 +621,7 @@ class T
    * @return string
    */
   protected static function get_codeset($domain=null) {
-    if (!isset($domain)) $domain = static::$default_domain;
+    if (!isset($domain)) $domain = static::$current_domain;
     static::initialize_domain_if_needed($domain);
     return isset(static::$text_domains[$domain]->codeset) ? static::$text_domains[$domain]->codeset : (
       (extension_loaded('mbstring') && mb_internal_encoding() != '') ? mb_internal_encoding() : (

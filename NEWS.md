@@ -1,13 +1,13 @@
-### Release 2.0.0-beta2 (not yet released)
+### Release 2.0.0-beta2 2025-7-28
 
 * fixed calling `T::setlocale` with multiple locale arguments
 * improved return values of `T::bind_textdomain_codeset`
 * improved handling of unexpected arg type in `T::bind_textdomain_codeset` and `T::bindtextdomain`
 * improved handling of unexpected arg values in `T::bindtextdomain`
 * made a few public methods of `gettext_reader` protected
-* introduced an Interface which `gettext_reader` replacement classes must implement
-* improve usage of `T::gettext` after initializing gettext instead of T in the case of non-emulation (calling plain
-  `bindtextdomain` and `bind_textdomain_codeset`)
+* introduced an interface which `gettext_reader` replacement classes must implement
+* improve usage of `T::gettext` after initializing gettext instead of T in the case of non-emulation (ie. calling plain
+  `bindtextdomain` and `bind_textdomain_codeset` instead of `T::bindtextdomain` and `T::bind_textdomain_codeset`)
 
 ### Release 2.0.0-beta1, 2025-7-20
 
@@ -76,7 +76,7 @@
 | function   | T_textdomain               | PGetText\T::textdomain                 |                                |
 |            |                            |                                        |                                |
 | global var | $text_domains              | PGetText\T::$text_domains              | protected static class member  |
-| global var | $default_domain            | PGetText\T::$default_domain            | protected static class member  |
+| global var | $default_domain            | PGetText\T::$current_domain            | protected static class member  |
 | global var | $LC_CATEGORIES             | PGetText\T::$LC_CATEGORIES             | protected static class member  |
 | global var | $EMULATEGETTEXT            | PGetText\T::$emulate_locales           | protected static class member  |
 | global var | $CURRENTLOCALE             | PGetText\T::$current_locale            | protected static class member  |

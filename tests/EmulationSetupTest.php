@@ -24,12 +24,13 @@ class EmulationSetupTest extends EmulationTest
   {
     return array(
       array(null),
-/// @todo fix this case
-      //array(''),
+      array(''),
       array(-1),
-/// @todo fix this case
-      //array(0),
+      array(-10),
+      array(0),
+      array('0'),
       array(1),
+      array(10),
       /// @todo fix these cases - raise + expect an error
       //array(array()),
       //array(new stdClass()),
@@ -61,6 +62,7 @@ class EmulationSetupTest extends EmulationTest
       //'',
       -1,
       0,
+      '0',
       1,
       /// @todo fix these cases - raise + expect an error `textdomain(): Argument #1 ($domain) must be of type ?string, array given`
       //array(),
@@ -74,6 +76,7 @@ class EmulationSetupTest extends EmulationTest
       '   ',
       -1,
       0,
+      '0',
       1,
       /// @todo fix these cases - expect an error?
       //array(),
@@ -111,6 +114,7 @@ class EmulationSetupTest extends EmulationTest
     $textDomains = array(
       -1,
       0,
+      '0',
       1,
       /// @todo fix these cases - raise + expect an error `textdomain(): Argument #1 ($domain) must be of type ?string, array given`
       //array(),
@@ -128,6 +132,7 @@ class EmulationSetupTest extends EmulationTest
       '',
       -1,
       0,
+      '0',
       1,
       /// @todo fix these cases - expect an error
       //array(),
