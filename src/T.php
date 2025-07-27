@@ -244,11 +244,11 @@ class T
    * @param string|null $directory
    * @return string|false
    */
-  public static function bindtextdomain($domain, $path) {
+  public static function bindtextdomain($domain, $directory) {
     if (static::check_locale_and_function('bindtextdomain'))
-      return bindtextdomain($domain, $path);
+      return bindtextdomain($domain, $directory);
     else
-      return static::_bindtextdomain($domain, $path);
+      return static::_bindtextdomain($domain, $directory);
   }
 
   /**
@@ -258,11 +258,11 @@ class T
    * @param int $category
    * @return string
    */
-  public static function dcgettext($domain, $msgid, $category) {
+  public static function dcgettext($domain, $message, $category) {
     if (static::check_locale_and_function('dcgettext'))
-      return dcgettext($domain, $msgid, $category);
+      return dcgettext($domain, $message, $category);
     else
-      return static::_dcgettext($domain, $msgid, $category);
+      return static::_dcgettext($domain, $message, $category);
   }
 
   /**
@@ -274,11 +274,11 @@ class T
    * @param int $category
    * @return string
    */
-  public static function dcngettext($domain, $singular, $plural, $number, $category) {
+  public static function dcngettext($domain, $singular, $plural, $count, $category) {
     if (static::check_locale_and_function('dcngettext'))
-      return dcngettext($domain, $singular, $plural, $number, $category);
+      return dcngettext($domain, $singular, $plural, $count, $category);
     else
-      return static::_dcngettext($domain, $singular, $plural, $number, $category);
+      return static::_dcngettext($domain, $singular, $plural, $count, $category);
   }
 
   /**
@@ -287,11 +287,11 @@ class T
    * @param string $message
    * @return string
    */
-  public static function dgettext($domain, $msgid) {
+  public static function dgettext($domain, $message) {
     if (static::check_locale_and_function('dgettext'))
-      return dgettext($domain, $msgid);
+      return dgettext($domain, $message);
     else
-      return static::_dgettext($domain, $msgid);
+      return static::_dgettext($domain, $message);
   }
 
   /**
@@ -302,11 +302,11 @@ class T
    * @param int $count
    * @return string
    */
-  public static function dngettext($domain, $singular, $plural, $number) {
+  public static function dngettext($domain, $singular, $plural, $count) {
     if (static::check_locale_and_function('dngettext'))
-      return dngettext($domain, $singular, $plural, $number);
+      return dngettext($domain, $singular, $plural, $count);
     else
-      return static::_dngettext($domain, $singular, $plural, $number);
+      return static::_dngettext($domain, $singular, $plural, $count);
   }
 
   /**
@@ -328,11 +328,11 @@ class T
    * @param int $count
    * @return string
    */
-  public static function ngettext($singular, $plural, $number) {
+  public static function ngettext($singular, $plural, $count) {
     if (static::check_locale_and_function('ngettext'))
-      return ngettext($singular, $plural, $number);
+      return ngettext($singular, $plural, $count);
     else
-      return static::_ngettext($singular, $plural, $number);
+      return static::_ngettext($singular, $plural, $count);
   }
 
   /**
@@ -569,7 +569,9 @@ class T
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
 
-    static::initialize_domain_if_needed($domain);
+    if (static::initialize_domain_if_needed($domain)) {
+      /// @todo unless we are emulating the API, initialize the domain path and codeset from the native php extension
+    }
 
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
@@ -706,11 +708,17 @@ class T
     return $ok;
   }
 
+  /**
+   * @param string $domain
+   * @return bool true when the domain is created on the fly
+   */
   protected static function initialize_domain_if_needed($domain)
   {
     if (!array_key_exists($domain, static::$text_domains)) {
       // Initialize an empty domain object.
       static::$text_domains[$domain] = new domain();
+      return true;
     }
+    return false;
   }
 }
