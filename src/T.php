@@ -426,14 +426,17 @@ class T
         /// @todo make sure we avoid loops - $current_locale should never be 0 or '0'
         return static::get_current_locale($category, static::$current_locale);*/
     } else {
-      // we make sure the `setlocale` function is not the polyfill, to avoid loops!
+      // we make sure the `setlocale` function is not the polyfill one, to avoid loops!
       if (function_exists('setlocale') && !isset(static::$emulated_functions['setlocale'])) {
-/// @todo pass to setlocale all args we received - and modify the check for failure below
-        $ret = setlocale($category, $locale);
-        if (($locale == '' and !$ret) or // failed setting it from env vars
-          ($locale != '' and $ret != $locale)) { // failed setting it
-          // Failed setting it according to environment. Enable emulation for the current locale
-          static::$current_locale = static::get_default_locale($locale);
+        $args = func_get_args();
+        $ret = call_user_func_array('setlocale', $args);
+        if (!$ret) {
+          // Failed setting it. Enable emulation for the current locale
+          if ($category != 5) {
+            trigger_error("Function T::setlocale called with LC_ALL category, but in emulated mode only messages will be translated. Use LC_MESSAGES instead", E_USER_WARNING);
+          }
+          array_shift($args);
+          static::$current_locale = static::get_default_locale($args);
           static::$emulate_locales[static::$current_locale] = true;
         } else {
           // Locale successfully set. Disable emulation for the current locale (this does not mean we will try to call
@@ -442,7 +445,8 @@ class T
           static::$emulate_locales[static::$current_locale] = false;
         }
       } else {
-        // No function setlocale(), emulate it all.
+        // No function setlocale(), emulate it all. NB: this should never happen irl, as setlocale is always defined by
+        // php and never emulated...
         static::$current_locale = static::get_default_locale($locale);
         static::$emulate_locales[static::$current_locale] = true;
       }
@@ -646,7 +650,7 @@ class T
 
   /**
    * Returns passed in $locale, or environment variable $LANG if $locale == ''.
-   * @param string|null $locale if null or empty string, use LANG env var
+   * @param string|string[]|null $locale if null or empty string, use LANG env var
    * @return string|false
    * @todo we should most likely support other env vars, as per
    *       https://www.gnu.org/software/gettext/manual/html_node/Locale-Environment-Variables.html
@@ -654,6 +658,10 @@ class T
    * @todo rename?
    */
   protected static function get_default_locale($locale) {
+/// @todo check what happens in native PHP when an array of locales is passed in, and the 1st element is the empty string
+    if (is_array($locale)) {
+      $locale = reset($locale);
+    }
     if ($locale == '')
       return getenv('LANG');
     else

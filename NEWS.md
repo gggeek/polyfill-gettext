@@ -2,6 +2,7 @@
 
 * made a few public methods of `gettext_reader` protected
 * introduced an Interface which `gettext_reader` replacement classes must implement
+* fixed calling `T::setlocale` with multiple locale arguments
 
 
 ### Release 2.0.0-beta1, 2025-7-20
