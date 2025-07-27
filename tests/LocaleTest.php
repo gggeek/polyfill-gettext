@@ -98,6 +98,9 @@ class LocaleTest extends PGettext_PolyfillTestCase
 
   public function test_setlocale_wrong_category()
   {
+    if (! is_callable(array($this, 'expectWarning'))) {
+      $this->markTestSkipped('current phpunit version has no support for testCase::expectWarning');
+    }
     $this->expectWarning();
     $ret = T::setlocale(1, 'C');
     $this->assertEquals(false, $ret);
