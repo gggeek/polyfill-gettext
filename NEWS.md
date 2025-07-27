@@ -1,12 +1,13 @@
 ### Release 2.0.0-beta2 (not yet released)
 
-* made a few public methods of `gettext_reader` protected
-* introduced an Interface which `gettext_reader` replacement classes must implement
 * fixed calling `T::setlocale` with multiple locale arguments
 * improved return values of `T::bind_textdomain_codeset`
 * improved handling of unexpected arg type in `T::bind_textdomain_codeset` and `T::bindtextdomain`
-* improved handling of unexpected arg values in `T::textdomain`
-
+* improved handling of unexpected arg values in `T::bindtextdomain`
+* made a few public methods of `gettext_reader` protected
+* introduced an Interface which `gettext_reader` replacement classes must implement
+* improve usage of `T::gettext` after initializing gettext instead of T in the case of non-emulation (calling plain
+  `bindtextdomain` and `bind_textdomain_codeset`)
 
 ### Release 2.0.0-beta1, 2025-7-20
 

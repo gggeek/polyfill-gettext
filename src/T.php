@@ -63,7 +63,10 @@ class T
     if (static::initialize_domain_if_needed($domain) < 0) {
       return false;
     }
-    if ($directory !== null) {
+
+/// @todo if $directory is null, 0 or '', do not set the dir
+
+    if (!$directory !== null) {
       if ($directory === '') {
         $directory = getcwd();
       } else {
@@ -570,12 +573,6 @@ class T
    * @param int $category see the LC_ constants. 5 = LC_MESSAGES
    * @param bool $enable_cache
    * @return gettext_reader
-   * @todo if this method is called without _bindtextdomain having been called first, it will not find the
-   *       translation files, as it will not have the correct root path set. This does happen f.e. every time
-   *       a method such as _gettext is called from a non-emulation context, where T::bindtextdomain is called
-   *       instead. We could obviate that by forcing T::bindtextdomain and T::bind_textdomain_codeset to always
-   *       set $text_domains[$domain] - even if that means a minor slowdown, it is not expected to be called many
-   *       times per php script...
    */
   protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
     if (!isset($domain)) $domain = static::$default_domain;
@@ -584,13 +581,11 @@ class T
     if ($initialized < 0) {
 /// @todo throw
     }
-    if ($initialized) {
-      /// @todo unless we are emulating the API, initialize the domain path and codeset from the native php extension
-    }
 
     if (!isset(static::$text_domains[$domain]->l10n)) {
       // get the current locale (LC_MESSAGES is 5, but we do not presume it to be defined)
       $locale = static::setlocale(5, 0);
+      /// @todo is it correct to use the current directory as default?
       $bound_path = isset(static::$text_domains[$domain]->path) ? static::$text_domains[$domain]->path : '.';
       $subpath = static::$LC_CATEGORIES[$category] ."/$domain.mo";
 
@@ -733,7 +728,20 @@ class T
     }
     if (!array_key_exists($domain, static::$text_domains)) {
       // Initialize an empty domain object.
-      static::$text_domains[$domain] = new domain();
+      $domainObj = new domain();
+      if (!isset(static::$emulated_functions['bindtextdomain'])) {
+        $currentDirectory = bindtextdomain($domain, null);
+        if ($currentDirectory !== false) {
+          $domainObj->path = $currentDirectory;
+        }
+      }
+      if (!isset(static::$emulated_functions['bind_textdomain_codeset'])) {
+        $currentCodeset = bind_textdomain_codeset($domain, null);
+        if (is_string($currentCodeset)) {
+          $domainObj->codeset = $currentCodeset;
+        }
+      }
+      static::$text_domains[$domain] = $domainObj;
       return 1;
     }
     return 0;
