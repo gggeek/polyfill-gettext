@@ -97,14 +97,30 @@ See the example file `examples/pigs_fallback.php` for more details.
 
 #### Providing translation files from custom storage
 
-Create one 'stream reader' (a class that implements `StreamReaderInterface`) which will provide data for the
-`gettext_reader`, with eg.
+You can create custom 'stream reader' classes (a class that implements `StreamReaderInterface`) which will provide data
+for the `gettext_reader`, and/or custom 'reader' classes (a class that implements `ReaderInterface`).
 
-    $streamer = new FileStream('data.mo');
+After having created your custom classes, you can make use of them, in various ways.
 
-Then, use that as a parameter to gettext_reader constructor:
+The shortest version:
 
-    $wohoo = new PGettext\gettext_reader($streamer);
+Set the names of your classes to `T::$reader_class` and/or `T::$stream_reader_class`. Done! Note that this requires
+compatibility of your new classes constructor arguments with the existing ones.
+
+The medium version:
+
+Create a subclass of `Pgettext\T`, and override its methods `T::build_reader` and `T::build_stream_reader`. Use your
+subclass in translation calls. Note that this does not support transparent emulation of the php native extension functions.
+
+The long version:
+
+Create one `StreamReaderInterface` instance which will provide data for the `ReaderInterface`, with eg.
+
+    $streamer = new MyFileStream('data.mo');
+
+Then, use that as a parameter to reader constructor:
+
+    $wohoo = new MyGettextReader($streamer, $whatever, $args...);
 
 If you want to disable pre-loading of entire message catalog in memory (if, for example, you have a multi-thousand
 message catalog which you'll use only occasionally), use `false` for the second parameter to the gettext_reader constructor:

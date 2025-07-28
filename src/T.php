@@ -2,7 +2,7 @@
 
 namespace PGettext;
 
-use PGettext\Streams\FileReader;
+use PGettext\Streams\StreamReaderInterface;
 
 class T
 {
@@ -15,13 +15,28 @@ class T
   protected static $emulate_locales = array();
   protected static $current_locale = '';
   protected static $emulated_functions = array();
-
-    /**
+  /**
+   * Can be changed to implement custom stream readers which do accept the same constructor arguments as gettext_reader
+   * @var string
+   */
+  public static $reader_class = '\PGettext\gettext_reader';
+  /**
+   * Can be changed to implement custom stream readers which do accept the same constructor arguments as FileReader
+   * @var string
+   */
+  public static $stream_reader_class = '\PGettext\Streams\FileReader';
+  /**
+   * Controls whether translation strings will be cached or not (by default, in memory)
+   * @var bool
+   */
+  public static $enable_cache = true;
+  /**
    * Note: the index value is the numeric value of the php constant of the same name as the value
    * @see https://www.php.net/manual/en/function.setlocale.php
    * @var string[]
    */
   protected static $LC_CATEGORIES = array('LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_MESSAGES', 'LC_ALL');
+
 
   // *** Custom implementation of the standard gettext related functions, plus a few similar ones ***
 
@@ -560,10 +575,10 @@ class T
    * Utility function to get a StreamReader for the given text domain.
    * @param string|null $domain
    * @param int $category see the LC_ constants. 5 = LC_MESSAGES
-   * @param bool $enable_cache
-   * @return gettext_reader
+   * @param bool|null $enable_cache when null, static::$enable_cache decides whether to cache translation strings or not
+   * @return ReaderInterface
    */
-  protected static function get_reader($domain=null, $category=5, $enable_cache=true) {
+  protected static function get_reader($domain=null, $category=5, $enable_cache=null) {
     if (!isset($domain)) $domain = static::$current_domain;
 
     $initialized = static::initialize_domain_if_needed($domain);
@@ -579,21 +594,41 @@ class T
       $subpath = static::$LC_CATEGORIES[$category] ."/$domain.mo";
 
       $locale_names = static::get_list_of_locales($locale);
-      $input = null;
+      $stream_reader = null;
       foreach ($locale_names as $locale) {
         $full_path = $bound_path . '/' . $locale . '/' . $subpath;
         if (file_exists($full_path)) {
-          $input = new FileReader($full_path);
+          $stream_reader = static::build_stream_reader($full_path);
           break;
         }
       }
 
-      /// @todo save the class name in a static variable, so that users can easily change that and swap out
-      ///       gettext_reader with a custom implementation
-      static::$text_domains[$domain]->l10n = new gettext_reader($input, $enable_cache);
+      if ($enable_cache === null) {
+        $enable_cache = static::$enable_cache;
+      }
+      static::$text_domains[$domain]->l10n = static::build_reader($stream_reader, $enable_cache);
     }
 
     return static::$text_domains[$domain]->l10n;
+  }
+
+  /**
+   * Can be overridden in subclasses.
+   * @param string $full_path
+   * @return StreamReaderInterface
+   */
+  protected static function build_stream_reader($full_path) {
+    return new static::$stream_reader_class($full_path);
+  }
+
+  /**
+   * Can be overridden in subclasses.
+   * @param StreamReaderInterface $stream_reader
+   * @param bool $enable_cache
+   * @return ReaderInterface
+   */
+  protected static function build_reader($stream_reader, $enable_cache=true) {
+    return new static::$reader_class($stream_reader, $enable_cache);
   }
 
   /**

@@ -1,3 +1,12 @@
+### Release 2.0.0-xxx (not yet released)
+
+* added public class members `T::$reader_class`, `T::$stream_reader_class` and `T::$enable_cache`, which can be modified
+  to implement custom storage of .mo files, or even loading translation strings from different file formats
+* added protected methods `T::build_reader` and `T::build_stream_reader`, which can be overridden in subclasses
+  to implement custom storage of .mo files, or even loading translation strings from different file formats, when the
+  new reader classes implement different constructor arguments
+* made some public members of stream reader classes protected
+
 ### Release 2.0.0-beta2 2025-7-28
 
 * fixed calling `T::setlocale` with multiple locale arguments
