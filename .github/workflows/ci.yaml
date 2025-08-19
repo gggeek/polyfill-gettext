@@ -32,7 +32,7 @@ jobs:
                     -   php: '7.1'
                         operating-system: windows-2022
                     -   php: '7.0'
-                        operating-system: windows-2019
+                        operating-system: ubuntu-22.04
                     -   php: '5.6'
                         operating-system: ubuntu-22.04
                     -   php: '5.5'
@@ -44,7 +44,7 @@ jobs:
                  uses: actions/checkout@v3
 
             -   name: set up env (Linux)
-                if: ${{ runner.os == 'Windows' }}
+                if: ${{ runner.os == 'Linux' }}
                 run: |
                   sudo --preserve-env=GITHUB_ACTIONS apt install gettext
                   # locales used by the examples
