@@ -9,8 +9,9 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    # @todo macos runners hosted on GH seem to be very scarce. they take forever to spin up...
+                    # @todo run tests as well on solaris, linux-arm (will need setting up a VM most likely...)
                     # @see https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
-                    # @todo run some tests on 'windows-latest' (needs test env setup scripts for windows to be developed)
                     -   php: '8.4'
                         operating-system: ubuntu-24.04
                     -   php: '8.3'
@@ -63,7 +64,7 @@ jobs:
                   #sudo locale-gen en_US
                   #sudo locale-gen sr_RS
 
-            # @todo do we need to install gettext? What about generating the locales used by the examples?
+            # @todo install gettext from gnuwin32 using curl. Then what about generating the locales used by the examples?
             #-   name: set up env (Windows)
             #    if: ${{ runner.os == 'Windows' }}
             #    run: |
