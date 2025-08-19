@@ -43,6 +43,7 @@ class ReaderTest extends PGettext_PolyfillTestCase
 
   public function test_select_string_disallows_nonint_numbers()
   {
+    /// @todo catch stderr. It does show on the cli, at least when running the test on bash on windows on gh runners
     exec('which msgfmt', $output, $retcode);
     if ($retcode != 0) {
       $this->markTestSkipped('Command msgfmt not found');
