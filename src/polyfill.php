@@ -26,10 +26,9 @@
 use PGettext\T;
 
 // LC_MESSAGES is not available if php has not been compiled with libintl, while the other constants are always available.
-// On Linux, the values are: LC_CTYPE=0, LC_NUMERIC=1, LC_TIME=2, LC_COLLATE=3, LC_MONETARY=4, LC_MESSAGES=5, LC_ALL=6
+// On Linux and Solaris, the values are: LC_CTYPE=0, LC_NUMERIC=1, LC_TIME=2, LC_COLLATE=3, LC_MONETARY=4, LC_MESSAGES=5, LC_ALL=6
 // On Windows, the values are: LC_CTYPE=2, LC_NUMERIC=4, LC_TIME=5, LC_COLLATE=1, LC_MONETARY=3, LC_MESSAGES=undefined, LC_ALL=0
 // On FreeBSD (14), the values are: LC_CTYPE=2, LC_NUMERIC=4, LC_TIME=5, LC_COLLATE=1, LC_MONETARY=3, LC_MESSAGES=6, LC_ALL=0
-// On Solaris, the values are: LC_CTYPE=, LC_NUMERIC=, LC_TIME=, LC_COLLATE=, LC_MONETARY=, LC_MESSAGES=, LC_ALL=
 if (!defined('LC_MESSAGES')) {
   $lc_constants_values_in_use = array();
   foreach(array('LC_CTYPE', 'LC_NUMERIC', 'LC_TIME', 'LC_COLLATE', 'LC_MONETARY', 'LC_ALL') as $constant) {
